@@ -1,55 +1,82 @@
 # Infra local (ministack)
 
 ```bash
-docker compose up -d ministack
+docker compose up --build
 ```
 
-Sobe o [ministack](https://github.com/ministackorg/ministack) na porta única `4566`, emulando DynamoDB, S3, SQS, Cognito e API Gateway (REST e HTTP API) para desenvolvimento sem conta AWS real.
+Sobe tudo automatizado, nessa ordem (via `depends_on` + healthcheck/`service_completed_successfully`):
 
-Pra aplicar localmente com CORS liberado pro Vite dev server, passe `-var 'local_dev_origins=["http://localhost:5173"]'` (vazio por padrão para não vazar em prod/staging).
+1. **ministack** — [emulador AWS](https://github.com/ministackorg/ministack) na porta `4566` (DynamoDB, S3, SQS, Cognito, API Gateway).
+2. **terraform-init** — container one-shot (`infra/terraform/docker-init-apply.sh`) que gera `infra/terraform/override.tf`
+   (provider com endpoints apontados pro ministack — não versionado, seção seguinte explica o conteúdo), roda
+   `terraform init` + `apply` só dos módulos suportados localmente, e grava os outputs em
+   `infra/terraform/env/backend.env` e `infra/terraform/env/frontend.env` (gitignored).
+3. **backend** / **frontend** — sobem em container só depois do `terraform-init` terminar com sucesso, lendo os `.env`
+   gerados no passo anterior via `env_file` no `docker-compose.yml`.
 
-Para apontar o Terraform pro ministack local em vez da AWS real, use um provider com endpoints customizados e credenciais dummy:
+Como `network`/`api_gateway`/`ecs` dependem de NLB + VPC Link (gap conhecido, seção abaixo), o `terraform apply` do
+`terraform-init` usa `-target` pra só subir `cognito`/`dynamodb`/`s3`/`sqs` — os módulos sem suporte confirmado no
+ministack ficam de fora.
+
+O `override.tf` gerado (efêmero, recriado a cada `docker compose up`):
 
 ```hcl
 provider "aws" {
-  region                      = "sa-east-1"
   access_key                  = "test"
   secret_key                  = "test"
   s3_use_path_style           = true
   skip_credentials_validation = true
   skip_metadata_api_check     = true
-  skip_requesting_account_key = true
+  skip_requesting_account_id  = true
 
   endpoints {
-    apigatewayv2 = "http://localhost:4566"
-    cognitoidp   = "http://localhost:4566"
-    dynamodb     = "http://localhost:4566"
-    ecs          = "http://localhost:4566"
-    iam          = "http://localhost:4566"
-    s3           = "http://localhost:4566"
-    sqs          = "http://localhost:4566"
-    sts          = "http://localhost:4566"
-    ec2          = "http://localhost:4566"
-    elbv2        = "http://localhost:4566"
-    logs         = "http://localhost:4566"
+    apigatewayv2 = "http://ministack:4566"   # nome do serviço docker-compose, não localhost —
+    cognitoidp   = "http://ministack:4566"   # terraform-init roda em container na mesma rede
+    dynamodb     = "http://ministack:4566"
+    ecs          = "http://ministack:4566"
+    iam          = "http://ministack:4566"
+    s3           = "http://ministack:4566"
+    sqs          = "http://ministack:4566"
+    sts          = "http://ministack:4566"
+    ec2          = "http://ministack:4566"
+    elbv2        = "http://ministack:4566"
+    logs         = "http://ministack:4566"
   }
 }
 ```
 
-## Rodando o backend local contra o ministack
+A variável `local_dev_endpoint` (root + módulo `cognito`) recebe o mesmo `http://ministack:4566` no apply — sem ela,
+`issuer_url` sempre aponta pro DNS real da AWS (`cognito-idp.{region}.amazonaws.com`), e o `JwtDecoder` do Spring
+falha ao buscar o discovery doc contra um pool que só existe no ministack. Com a variável setada, `issuer_url` vira
+`http://ministack:4566/{poolId}` — resolvível de dentro do container do backend, que está na mesma rede compose.
 
-Depois de aplicar o Terraform contra o ministack (seção acima) e pegar os outputs, exporte:
-
-```bash
-export COGNITO_ISSUER_URI=$(terraform output -raw cognito_issuer_url)
-export AWS_REGION=sa-east-1
-export AWS_ENDPOINT_OVERRIDE=http://localhost:4566
-export AWS_DYNAMODB_TABLE_NAME=$(terraform output -raw dynamodb_table_name)
-export AWS_S3_ATTACHMENTS_BUCKET=$(terraform output -raw attachments_bucket_name)
-export AWS_SQS_ATTACHMENTS_QUEUE_URL=$(terraform output -raw attachments_queue_url)
-```
+O SDK Cognito do frontend (`amazon-cognito-identity-js`, roda no browser do host, não em container) usa um endpoint
+diferente pro mesmo ministack: `VITE_COGNITO_ENDPOINT=http://localhost:4566` (porta publicada), não `http://ministack:4566`
+(só resolvível dentro da rede docker).
 
 Sem `AWS_SQS_ATTACHMENTS_QUEUE_URL` setada, todo upload de anexo falha no passo de publicar na fila (queueUrl vazio).
+Sem `COGNITO_ISSUER_URI` setada (vazia, o default), o Spring nem cria o bean `JwtDecoder` e o
+`bootRun` falha na subida com `SecurityConfig` reclamando de bean ausente. O `docker-init-apply.sh` cobre os dois.
+
+## Rodando backend/frontend fora de container (loop de dev mais rápido)
+
+Depois de rodar `docker compose up` pelo menos uma vez (gera `infra/terraform/env/*.env` com
+`ministack:4566` — nome só resolvível na rede docker, por isso o `sed` abaixo troca por `localhost`):
+
+```bash
+cd backend
+set -a && . <(sed 's/ministack:4566/localhost:4566/;s#http://ministack:4566/#http://localhost:4566/#' ../infra/terraform/env/backend.env) && set +a
+./gradlew bootRun
+```
+
+```powershell
+Get-Content ..\infra\terraform\env\backend.env | ForEach-Object {
+  if ($_ -match '^([^=]+)=(.*)$') { Set-Item "env:$($Matches[1])" ($Matches[2] -replace 'ministack:4566', 'localhost:4566') }
+}
+./gradlew bootRun
+```
+
+Ou, mais simples: rode o backend também via `docker compose up backend` e itere só no frontend fora de container.
 
 ## Gap conhecido: NLB + VPC Link (task 1.9, spike)
 

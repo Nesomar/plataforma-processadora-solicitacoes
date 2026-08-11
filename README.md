@@ -19,37 +19,23 @@ Arquitetura completa e decisões de design: [`docs/architecture.md`](docs/archit
 
 ## Rodando local
 
-### 1. Subir o ministack (emulador AWS)
+Um comando sobe tudo: ministack, aplica a infra Terraform local (`terraform-init`, roda uma vez
+e sai), backend e frontend — cada um em container, backend/frontend só sobem depois que o
+`terraform-init` termina com sucesso.
 
 ```bash
-docker compose up -d ministack
+docker compose up --build
 ```
 
-### 2. Aplicar a infra local (opcional — só se for exercitar o backend/frontend de ponta a ponta)
+Backend em `http://localhost:8080`, frontend em `http://localhost:5173`. Detalhe de como o
+`terraform-init` gera o provider/env locais: [`infra/README.md`](infra/README.md). Os módulos
+`network`/`api_gateway`/`ecs` ficam fora do apply local: dependem de NLB + VPC Link, sem suporte
+confirmado no ministack (gap documentado em `infra/README.md`).
 
-Ver [`infra/README.md`](infra/README.md) para o provider Terraform apontado pro ministack e as
-env vars que o backend precisa.
-
-### 3. Backend
-
-```bash
-cd backend
-./gradlew bootRun
-```
-
-Requer `COGNITO_ISSUER_URI`, `AWS_ENDPOINT_OVERRIDE`, `AWS_DYNAMODB_TABLE_NAME`,
-`AWS_S3_ATTACHMENTS_BUCKET`, `AWS_SQS_ATTACHMENTS_QUEUE_URL` setadas (ver `infra/README.md`).
-
-### 4. Frontend
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-Requer `.env` com `VITE_API_BASE_URL`, `VITE_COGNITO_USER_POOL_ID`, `VITE_COGNITO_CLIENT_ID`
-(ver `frontend/.env.example`).
+Pra iterar só no backend ou frontend fora de container (mais rápido pra loop de dev): ver
+["Rodando backend/frontend fora de container"](infra/README.md#rodando-backendfrontend-fora-de-container-loop-de-dev-mais-rápido)
+em `infra/README.md` — os endpoints gerados usam o nome do serviço docker (`ministack`), precisa trocar
+por `localhost` ao exportar manualmente.
 
 ## Testes
 

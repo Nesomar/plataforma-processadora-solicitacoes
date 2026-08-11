@@ -12,5 +12,5 @@ output "user_pool_client_id" {
 
 output "issuer_url" {
   description = "URL do issuer usada para validar o JWT (Spring Security resource server) e no Cognito Authorizer do API Gateway"
-  value       = "https://cognito-idp.${data.aws_region.current.name}.amazonaws.com/${aws_cognito_user_pool.clients.id}"
+  value = var.local_dev_endpoint != "" ? "${var.local_dev_endpoint}/${aws_cognito_user_pool.clients.id}" : "https://cognito-idp.${data.aws_region.current.name}.amazonaws.com/${aws_cognito_user_pool.clients.id}"
 }

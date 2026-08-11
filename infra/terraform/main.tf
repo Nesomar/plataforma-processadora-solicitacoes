@@ -11,8 +11,9 @@ module "network" {
 module "cognito" {
   source = "./modules/cognito"
 
-  project_name = var.project_name
-  environment  = var.environment
+  project_name       = var.project_name
+  environment        = var.environment
+  local_dev_endpoint = var.local_dev_endpoint
 }
 
 module "dynamodb" {

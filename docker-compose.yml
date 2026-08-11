@@ -11,6 +11,47 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ministack-data:/var/lib/ministack
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import socket; socket.create_connection(('localhost', 4566), timeout=2)"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
+
+  terraform-init:
+    image: hashicorp/terraform:1.9
+    entrypoint: ["sh", "docker-init-apply.sh"]
+    working_dir: /workspace
+    volumes:
+      - ./infra/terraform:/workspace
+    depends_on:
+      ministack:
+        condition: service_healthy
+
+  backend:
+    build: ./backend
+    ports:
+      - "8080:8080"
+    env_file:
+      - path: ./infra/terraform/env/backend.env
+        required: false
+    depends_on:
+      terraform-init:
+        condition: service_completed_successfully
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    env_file:
+      - path: ./infra/terraform/env/frontend.env
+        required: false
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      terraform-init:
+        condition: service_completed_successfully
 
 volumes:
   ministack-data:

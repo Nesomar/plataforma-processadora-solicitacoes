@@ -29,3 +29,13 @@ replay_pid*
 # Claude Code: local/personal, não compartilhável entre máquinas
 .claude/settings.local.json
 .claude/scheduled_tasks.lock
+
+# Terraform: state e override local (ministack) não são compartilháveis entre máquinas
+.terraform/
+*.tfstate
+*.tfstate.*
+override.tf
+override.tf.json
+
+# Env gerado pelo terraform-init do docker-compose (outputs do ministack)
+infra/terraform/env/

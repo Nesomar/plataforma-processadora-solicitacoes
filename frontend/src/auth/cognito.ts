@@ -7,6 +7,9 @@ import {
 const userPool = new CognitoUserPool({
   UserPoolId: import.meta.env.VITE_COGNITO_USER_POOL_ID,
   ClientId: import.meta.env.VITE_COGNITO_CLIENT_ID,
+  ...(import.meta.env.VITE_COGNITO_ENDPOINT
+    ? { endpoint: import.meta.env.VITE_COGNITO_ENDPOINT }
+    : {}),
 });
 
 export interface LoginResult {
