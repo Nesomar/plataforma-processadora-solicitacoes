@@ -35,13 +35,13 @@
 
 ## 4. attachments — upload de anexos (branch `feature/attachments`)
 
-- [ ] 4.1 Domain: modelo de Anexo (metadata, S3 key, status)
-- [ ] 4.2 Use case: receber upload via ECS, gravar no S3, publicar evento na fila SQS
-- [ ] 4.3 Adapter-out: cliente S3 e cliente SQS
-- [ ] 4.4 Adapter-in: endpoint REST de upload (etapa de anexos do wizard)
-- [ ] 4.5 Frontend: etapa de anexos no wizard (seleção/envio de PDF)
-- [ ] 4.6 Testes: upload grava no S3 e publica evento; falha na gravação não publica evento (cobre specs/attachments/spec.md)
-- [ ] 4.7 Code review da etapa
+- [x] 4.1 Domain: modelo de Anexo (metadata, S3 key, status)
+- [x] 4.2 Use case: receber upload via ECS, gravar no S3, publicar evento na fila SQS
+- [x] 4.3 Adapter-out: cliente S3 e cliente SQS
+- [x] 4.4 Adapter-in: endpoint REST de upload (etapa de anexos do wizard)
+- [x] 4.5 Frontend: etapa de anexos no wizard (seleção/envio de PDF)
+- [x] 4.6 Testes: upload grava no S3 e publica evento; falha na gravação não publica evento (cobre specs/attachments/spec.md)
+- [x] 4.7 Code review da etapa
 
 ## 5. service-requests — nova solicitação e acompanhamento (branch `feature/service-requests`)
 
@@ -54,11 +54,3 @@
 - [ ] 5.7 Testes: criação bloqueada com perfil incompleto; reaproveitamento de dados do perfil; cliente não acessa solicitação de outro cliente (cobre specs/service-requests/spec.md)
 - [ ] 5.8 Code review da etapa
 
-## 6. Deploy real na AWS (branch `feature/deploy-aws`)
-
-- [ ] 6.1 Aplicar Terraform no ambiente AWS real (conta de dev/staging)
-- [ ] 6.2 Build e deploy do frontend no S3 + invalidação CloudFront
-- [ ] 6.3 Build e deploy da imagem do backend no ECS
-- [ ] 6.4 Smoke test ponta a ponta contra AWS real (login → onboarding → anexo → solicitação)
-- [ ] 6.5 Comparar comportamento observado com o validado localmente via ministack; documentar divergências
-- [ ] 6.6 Code review da etapa

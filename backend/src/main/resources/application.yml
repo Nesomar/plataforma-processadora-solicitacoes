@@ -4,6 +4,10 @@ server:
 spring:
   application:
     name: backend
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
   security:
     oauth2:
       resourceserver:
@@ -12,9 +16,13 @@ spring:
 
 aws:
   region: ${AWS_REGION:sa-east-1}
+  endpoint-override: ${AWS_ENDPOINT_OVERRIDE:}
   dynamodb:
-    endpoint: ${AWS_DYNAMODB_ENDPOINT:}
     table-name: ${AWS_DYNAMODB_TABLE_NAME:portal-cliente-dev-main}
+  s3:
+    attachments-bucket: ${AWS_S3_ATTACHMENTS_BUCKET:portal-cliente-dev-attachments}
+  sqs:
+    attachments-queue-url: ${AWS_SQS_ATTACHMENTS_QUEUE_URL:}
 
 management:
   endpoints:

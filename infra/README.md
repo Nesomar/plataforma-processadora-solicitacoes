@@ -36,6 +36,21 @@ provider "aws" {
 }
 ```
 
+## Rodando o backend local contra o ministack
+
+Depois de aplicar o Terraform contra o ministack (seção acima) e pegar os outputs, exporte:
+
+```bash
+export COGNITO_ISSUER_URI=$(terraform output -raw cognito_issuer_url)
+export AWS_REGION=sa-east-1
+export AWS_ENDPOINT_OVERRIDE=http://localhost:4566
+export AWS_DYNAMODB_TABLE_NAME=$(terraform output -raw dynamodb_table_name)
+export AWS_S3_ATTACHMENTS_BUCKET=$(terraform output -raw attachments_bucket_name)
+export AWS_SQS_ATTACHMENTS_QUEUE_URL=$(terraform output -raw attachments_queue_url)
+```
+
+Sem `AWS_SQS_ATTACHMENTS_QUEUE_URL` setada, todo upload de anexo falha no passo de publicar na fila (queueUrl vazio).
+
 ## Gap conhecido: NLB + VPC Link (task 1.9, spike)
 
 `modules/network` cria um NLB e `modules/api_gateway` cria um VPC Link privado apontando pro listener desse NLB (é assim que o API Gateway HTTP API chega no ECS em produção). Pesquisa na documentação do ministack (ago/2026) mostra:

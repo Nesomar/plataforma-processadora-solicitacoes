@@ -10,13 +10,15 @@ import { perfilApi } from "../../api/perfilApi";
 import { DadosPessoaisForm } from "./DadosPessoaisForm";
 import { EnderecoForm } from "./EnderecoForm";
 import { RendaForm } from "./RendaForm";
+import { AnexosStep } from "./AnexosStep";
+
+type WizardStep = OnboardingStep | "ANEXOS" | "loading" | null;
 
 // Etapa exibida vem sempre do gate do backend (não de estado local do front) — é o
-// backend que decide onde retomar (specs/client-profile/spec.md).
+// backend que decide onde retomar (specs/client-profile/spec.md). Anexos é etapa só do
+// front: o gate de perfil (backend) não depende dela.
 export function OnboardingWizard() {
-  const [step, setStep] = useState<OnboardingStep | null | "loading">(
-    "loading",
-  );
+  const [step, setStep] = useState<WizardStep>("loading");
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const submitting = useRef(false);
@@ -30,7 +32,7 @@ export function OnboardingWizard() {
   async function refreshGate() {
     const gate = await perfilApi.consultarGate();
     if (gate.completo) {
-      navigate("/", { replace: true });
+      setStep("ANEXOS");
       return;
     }
     setStep(gate.proximaEtapa);
@@ -77,6 +79,9 @@ export function OnboardingWizard() {
             handleSubmit(() => perfilApi.salvarRenda(dados))
           }
         />
+      )}
+      {step === "ANEXOS" && (
+        <AnexosStep onContinuar={() => navigate("/", { replace: true })} />
       )}
     </div>
   );

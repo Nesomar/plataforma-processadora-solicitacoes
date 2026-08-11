@@ -1,10 +1,12 @@
 package com.portalcliente.backend.adapter.input.web
 
+import com.portalcliente.backend.domain.FormatoAnexoInvalidoException
 import com.portalcliente.backend.domain.OrdemEtapaInvalidaException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import org.springframework.web.multipart.MaxUploadSizeExceededException
 
 @RestControllerAdvice
 class WebExceptionHandler {
@@ -19,4 +21,13 @@ class WebExceptionHandler {
     @ExceptionHandler(OrdemEtapaInvalidaException::class)
     fun handleOrdemEtapaInvalida(ex: OrdemEtapaInvalidaException): ResponseEntity<Map<String, String?>> =
         ResponseEntity.status(HttpStatus.CONFLICT).body(mapOf("error" to ex.message))
+
+    // Formato de anexo não suportado (specs/attachments/spec.md: só PDF é aceito)
+    @ExceptionHandler(FormatoAnexoInvalidoException::class)
+    fun handleFormatoAnexoInvalido(ex: FormatoAnexoInvalidoException): ResponseEntity<Map<String, String?>> =
+        ResponseEntity.status(HttpStatus.BAD_REQUEST).body(mapOf("error" to ex.message))
+
+    @ExceptionHandler(MaxUploadSizeExceededException::class)
+    fun handleMaxUploadSizeExceeded(): ResponseEntity<Map<String, String?>> =
+        ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(mapOf("error" to "Arquivo excede o tamanho máximo permitido"))
 }
