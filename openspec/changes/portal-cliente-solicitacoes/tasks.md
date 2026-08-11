@@ -45,12 +45,12 @@
 
 ## 5. service-requests — nova solicitação e acompanhamento (branch `feature/service-requests`)
 
-- [ ] 5.1 Domain: modelo de Solicitação, associada ao Cliente
-- [ ] 5.2 Use case: criar solicitação reaproveitando dados do perfil, bloqueando se perfil incompleto
-- [ ] 5.3 Use case: listar solicitações do próprio cliente
-- [ ] 5.4 Adapter-in: endpoints REST de criação/listagem
-- [ ] 5.5 Frontend: dashboard (lista de solicitações + ação "nova solicitação")
-- [ ] 5.6 Frontend: tela de acompanhamento de status da solicitação
-- [ ] 5.7 Testes: criação bloqueada com perfil incompleto; reaproveitamento de dados do perfil; cliente não acessa solicitação de outro cliente (cobre specs/service-requests/spec.md)
-- [ ] 5.8 Code review da etapa
+- [x] 5.1 Domain: modelo de Solicitação, associada ao Cliente
+- [x] 5.2 Use case: criar solicitação reaproveitando dados do perfil, bloqueando se perfil incompleto
+- [x] 5.3 Use case: listar solicitações do próprio cliente
+- [x] 5.4 Adapter-in: endpoints REST de criação/listagem
+- [x] 5.5 Frontend: dashboard (lista de solicitações + ação "nova solicitação")
+- [x] 5.6 Frontend: tela de acompanhamento de status da solicitação
+- [x] 5.7 Testes: criação bloqueada com perfil incompleto; reaproveitamento de dados do perfil; cliente não acessa solicitação de outro cliente (cobre specs/service-requests/spec.md)
+- [x] 5.8 Code review da etapa
 

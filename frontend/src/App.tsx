@@ -3,6 +3,7 @@ import { ProtectedRoute } from "./auth/ProtectedRoute";
 import { LoginPage } from "./pages/LoginPage";
 import { DashboardPage } from "./pages/DashboardPage";
 import { OnboardingWizard } from "./pages/onboarding/OnboardingWizard";
+import { SolicitacaoDetailPage } from "./pages/SolicitacaoDetailPage";
 
 export function App() {
   return (
@@ -12,6 +13,7 @@ export function App() {
         <Route element={<ProtectedRoute />}>
           <Route path="/" element={<DashboardPage />} />
           <Route path="/onboarding" element={<OnboardingWizard />} />
+          <Route path="/solicitacoes/:id" element={<SolicitacaoDetailPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

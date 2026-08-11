@@ -30,4 +30,10 @@ abstract class DynamoDbRepository<T : Any>(
         table.query(QueryConditional.keyEqualTo(Key.builder().partitionValue(pk).build()))
             .items()
             .toList()
+
+    /** Ex: listar só os itens "SOLICITACAO#" de um cliente, sem trazer PROFILE/ANEXO# junto. */
+    fun queryBySortPrefix(pk: String, skPrefix: String): List<T> =
+        table.query(
+            QueryConditional.sortBeginsWith(Key.builder().partitionValue(pk).sortValue(skPrefix).build()),
+        ).items().toList()
 }

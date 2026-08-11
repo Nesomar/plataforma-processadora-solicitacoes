@@ -2,6 +2,7 @@ package com.portalcliente.backend.adapter.input.web
 
 import com.portalcliente.backend.domain.FormatoAnexoInvalidoException
 import com.portalcliente.backend.domain.OrdemEtapaInvalidaException
+import com.portalcliente.backend.domain.PerfilIncompletoException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -30,4 +31,9 @@ class WebExceptionHandler {
     @ExceptionHandler(MaxUploadSizeExceededException::class)
     fun handleMaxUploadSizeExceeded(): ResponseEntity<Map<String, String?>> =
         ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(mapOf("error" to "Arquivo excede o tamanho máximo permitido"))
+
+    // Perfil incompleto — cliente precisa concluir o onboarding antes (specs/service-requests/spec.md)
+    @ExceptionHandler(PerfilIncompletoException::class)
+    fun handlePerfilIncompleto(ex: PerfilIncompletoException): ResponseEntity<Map<String, String?>> =
+        ResponseEntity.status(HttpStatus.CONFLICT).body(mapOf("error" to ex.message))
 }
