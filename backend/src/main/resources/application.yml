@@ -1,0 +1,23 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: backend
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${COGNITO_ISSUER_URI:}
+
+aws:
+  region: ${AWS_REGION:sa-east-1}
+  dynamodb:
+    endpoint: ${AWS_DYNAMODB_ENDPOINT:}
+    table-name: ${AWS_DYNAMODB_TABLE_NAME:portal-cliente-dev-main}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health

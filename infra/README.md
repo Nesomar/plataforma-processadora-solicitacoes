@@ -6,6 +6,8 @@ docker compose up -d ministack
 
 Sobe o [ministack](https://github.com/ministackorg/ministack) na porta única `4566`, emulando DynamoDB, S3, SQS, Cognito e API Gateway (REST e HTTP API) para desenvolvimento sem conta AWS real.
 
+Pra aplicar localmente com CORS liberado pro Vite dev server, passe `-var 'local_dev_origins=["http://localhost:5173"]'` (vazio por padrão para não vazar em prod/staging).
+
 Para apontar o Terraform pro ministack local em vez da AWS real, use um provider com endpoints customizados e credenciais dummy:
 
 ```hcl

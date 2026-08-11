@@ -39,11 +39,14 @@ module "sqs" {
 module "api_gateway" {
   source = "./modules/api_gateway"
 
-  project_name       = var.project_name
-  environment        = var.environment
-  vpc_id             = module.network.vpc_id
-  private_subnet_ids = module.network.private_subnet_ids
-  nlb_listener_arn   = module.network.nlb_listener_arn
+  project_name                = var.project_name
+  environment                 = var.environment
+  vpc_id                      = module.network.vpc_id
+  private_subnet_ids          = module.network.private_subnet_ids
+  nlb_listener_arn            = module.network.nlb_listener_arn
+  cognito_issuer_url          = module.cognito.issuer_url
+  cognito_user_pool_client_id = module.cognito.user_pool_client_id
+  allowed_origins             = concat(["https://${module.s3.cloudfront_domain_name}"], var.local_dev_origins)
 }
 
 module "ecs" {

@@ -13,14 +13,14 @@
 
 ## 2. Backend esqueleto + client-auth (branch `feature/client-auth`)
 
-- [ ] 2.1 Esqueleto do projeto Kotlin/Spring Boot com estrutura hexagonal (domain / ports / adapters-in / adapters-out)
-- [ ] 2.2 Adapter-out DynamoDB (repositório base, conexão configurável via endpoint — ministack local ou AWS real)
-- [ ] 2.3 Integração Spring Security resource server: revalidação de assinatura do JWT do Cognito
-- [ ] 2.4 Configurar Cognito Authorizer no API Gateway (Terraform)
-- [ ] 2.5 Frontend: tela de login (React) integrada ao Cognito
-- [ ] 2.6 Frontend: interceptor de requisições anexando Bearer token
-- [ ] 2.7 Testes: login com credenciais válidas/inválidas; requisição sem token rejeitada no gateway; token com assinatura inválida rejeitado no backend (cobre specs/client-auth/spec.md)
-- [ ] 2.8 Code review da etapa
+- [x] 2.1 Esqueleto do projeto Kotlin/Spring Boot com estrutura hexagonal (domain / ports / adapters-in / adapters-out)
+- [x] 2.2 Adapter-out DynamoDB (repositório base, conexão configurável via endpoint — ministack local ou AWS real)
+- [x] 2.3 Integração Spring Security resource server: revalidação de assinatura do JWT do Cognito
+- [x] 2.4 Configurar Cognito Authorizer no API Gateway (Terraform)
+- [x] 2.5 Frontend: tela de login (React) integrada ao Cognito
+- [x] 2.6 Frontend: interceptor de requisições anexando Bearer token
+- [x] 2.7 Testes: login com credenciais válidas/inválidas; requisição sem token rejeitada no gateway; token com assinatura inválida rejeitado no backend (cobre specs/client-auth/spec.md)
+- [x] 2.8 Code review da etapa
 
 ## 3. client-profile — onboarding sequencial (branch `feature/client-profile`)
 

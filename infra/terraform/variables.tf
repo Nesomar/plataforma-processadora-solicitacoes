@@ -33,3 +33,9 @@ variable "container_port" {
   type        = number
   default     = 8080
 }
+
+variable "local_dev_origins" {
+  description = "Origens de dev local autorizadas via CORS na API (ex: Vite dev server), além do domínio real do CloudFront. Vazio por padrão para não vazar pra prod/staging — setar explicitamente ao aplicar localmente (ex: -var 'local_dev_origins=[\"http://localhost:5173\"]')."
+  type        = list(string)
+  default     = []
+}

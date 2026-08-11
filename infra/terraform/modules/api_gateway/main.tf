@@ -28,6 +28,13 @@ resource "aws_apigatewayv2_vpc_link" "this" {
 resource "aws_apigatewayv2_api" "this" {
   name          = "${local.name}-api"
   protocol_type = "HTTP"
+
+  cors_configuration {
+    allow_origins = var.allowed_origins
+    allow_methods = ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
+    allow_headers = ["authorization", "content-type"]
+    max_age       = 300
+  }
 }
 
 resource "aws_apigatewayv2_integration" "ecs" {
@@ -39,11 +46,26 @@ resource "aws_apigatewayv2_integration" "ecs" {
   connection_id      = aws_apigatewayv2_vpc_link.this.id
 }
 
-# Rota catch-all; autorizacao Cognito e adicionada em cima disso (client-auth, task 2.4)
+resource "aws_apigatewayv2_authorizer" "cognito" {
+  api_id           = aws_apigatewayv2_api.this.id
+  name             = "${local.name}-cognito"
+  authorizer_type  = "JWT"
+  identity_sources = ["$request.header.Authorization"]
+
+  jwt_configuration {
+    audience = [var.cognito_user_pool_client_id]
+    issuer   = var.cognito_issuer_url
+  }
+}
+
+# Rota catch-all; API Gateway valida o JWT via Cognito Authorizer antes de rotear pro ECS
+# (backend revalida de novo — ver specs/client-auth/spec.md)
 resource "aws_apigatewayv2_route" "proxy" {
-  api_id    = aws_apigatewayv2_api.this.id
-  route_key = "ANY /{proxy+}"
-  target    = "integrations/${aws_apigatewayv2_integration.ecs.id}"
+  api_id             = aws_apigatewayv2_api.this.id
+  route_key          = "ANY /{proxy+}"
+  target             = "integrations/${aws_apigatewayv2_integration.ecs.id}"
+  authorization_type = "JWT"
+  authorizer_id      = aws_apigatewayv2_authorizer.cognito.id
 }
 
 resource "aws_apigatewayv2_stage" "default" {
