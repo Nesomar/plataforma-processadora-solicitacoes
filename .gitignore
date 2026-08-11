@@ -25,3 +25,7 @@ replay_pid*
 
 # Kotlin Gradle plugin data, see https://kotlinlang.org/docs/whatsnew20.html#new-directory-for-kotlin-data-in-gradle-projects
 .kotlin/
+
+# Claude Code: local/personal, não compartilhável entre máquinas
+.claude/settings.local.json
+.claude/scheduled_tasks.lock
