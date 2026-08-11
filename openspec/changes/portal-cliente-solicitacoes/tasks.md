@@ -24,14 +24,14 @@
 
 ## 3. client-profile — onboarding sequencial (branch `feature/client-profile`)
 
-- [ ] 3.1 Domain: modelo de Perfil (dados pessoais, endereço, renda) com estado de draft por etapa
-- [ ] 3.2 Use case: salvar etapa (PATCH incremental) com validação de ordem sequencial no backend
-- [ ] 3.3 Use case: consultar gate de perfil completo (GetItem DynamoDB)
-- [ ] 3.4 Adapter-in: endpoints REST das etapas do wizard
-- [ ] 3.5 Frontend: wizard multi-etapa (dados pessoais → endereço → renda), com retomada a partir do draft salvo
-- [ ] 3.6 Frontend: redirecionamento pós-login baseado no gate de perfil completo
-- [ ] 3.7 Testes: retomada de cadastro no meio; bloqueio de pular etapa via API direta; gate correto para perfil completo/incompleto (cobre specs/client-profile/spec.md)
-- [ ] 3.8 Code review da etapa
+- [x] 3.1 Domain: modelo de Perfil (dados pessoais, endereço, renda) com estado de draft por etapa
+- [x] 3.2 Use case: salvar etapa (PATCH incremental) com validação de ordem sequencial no backend
+- [x] 3.3 Use case: consultar gate de perfil completo (GetItem DynamoDB)
+- [x] 3.4 Adapter-in: endpoints REST das etapas do wizard
+- [x] 3.5 Frontend: wizard multi-etapa (dados pessoais → endereço → renda), com retomada a partir do draft salvo
+- [x] 3.6 Frontend: redirecionamento pós-login baseado no gate de perfil completo
+- [x] 3.7 Testes: retomada de cadastro no meio; bloqueio de pular etapa via API direta; gate correto para perfil completo/incompleto (cobre specs/client-profile/spec.md)
+- [x] 3.8 Code review da etapa
 
 ## 4. attachments — upload de anexos (branch `feature/attachments`)
 

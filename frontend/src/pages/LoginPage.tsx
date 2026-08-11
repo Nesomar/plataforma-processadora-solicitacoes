@@ -3,6 +3,7 @@ import type { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../auth/cognito";
 import { tokenStore } from "../auth/tokenStore";
+import { perfilApi } from "../api/perfilApi";
 
 export function LoginPage() {
   const [email, setEmail] = useState("");
@@ -15,12 +16,20 @@ export function LoginPage() {
     event.preventDefault();
     setError(null);
     setLoading(true);
+    let idToken: string;
     try {
-      const { idToken } = await login(email, password);
-      tokenStore.set(idToken);
-      navigate("/");
+      idToken = (await login(email, password)).idToken;
     } catch {
       setError("Email ou senha inválidos.");
+      setLoading(false);
+      return;
+    }
+    tokenStore.set(idToken);
+    try {
+      const gate = await perfilApi.consultarGate();
+      navigate(gate.completo ? "/" : "/onboarding");
+    } catch {
+      setError("Login feito, mas não foi possível continuar. Tente recarregar a página.");
     } finally {
       setLoading(false);
     }

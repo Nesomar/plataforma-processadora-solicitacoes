@@ -12,5 +12,5 @@ class MeController {
 
     @GetMapping("/api/me")
     fun me(@AuthenticationPrincipal jwt: Jwt): MeResponse =
-        MeResponse(clienteId = checkNotNull(jwt.subject) { "JWT sem claim 'sub'" }, email = jwt.getClaimAsString("email"))
+        MeResponse(clienteId = jwt.clienteId(), email = jwt.getClaimAsString("email"))
 }
