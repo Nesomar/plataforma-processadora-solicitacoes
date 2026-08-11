@@ -20,4 +20,8 @@ resource "aws_dynamodb_table" "main" {
   }
 
   tags = { Name = "${local.name}-main" }
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }

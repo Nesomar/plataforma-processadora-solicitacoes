@@ -27,3 +27,9 @@ variable "availability_zones" {
   type        = list(string)
   default     = ["sa-east-1a", "sa-east-1b"]
 }
+
+variable "container_port" {
+  description = "Porta que o backend escuta; usada tanto no target group do NLB (network) quanto no task-def (ecs)"
+  type        = number
+  default     = 8080
+}

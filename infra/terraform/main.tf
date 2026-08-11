@@ -5,6 +5,7 @@ module "network" {
   environment        = var.environment
   vpc_cidr           = var.vpc_cidr
   availability_zones = var.availability_zones
+  container_port     = var.container_port
 }
 
 module "cognito" {
@@ -48,13 +49,14 @@ module "api_gateway" {
 module "ecs" {
   source = "./modules/ecs"
 
-  project_name            = var.project_name
-  environment             = var.environment
-  vpc_id                  = module.network.vpc_id
-  vpc_cidr                = var.vpc_cidr
-  private_subnet_ids      = module.network.private_subnet_ids
-  target_group_arn        = module.network.ecs_target_group_arn
-  dynamodb_table_arn      = module.dynamodb.table_arn
-  attachments_bucket_arn  = module.s3.attachments_bucket_arn
-  sqs_queue_arn           = module.sqs.queue_arn
+  project_name           = var.project_name
+  environment            = var.environment
+  vpc_id                 = module.network.vpc_id
+  vpc_cidr               = var.vpc_cidr
+  private_subnet_ids     = module.network.private_subnet_ids
+  target_group_arn       = module.network.ecs_target_group_arn
+  container_port         = var.container_port
+  dynamodb_table_arn     = module.dynamodb.table_arn
+  attachments_bucket_arn = module.s3.attachments_bucket_arn
+  sqs_queue_arn          = module.sqs.queue_arn
 }

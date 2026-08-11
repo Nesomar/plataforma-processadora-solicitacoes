@@ -99,7 +99,7 @@ resource "aws_lb" "internal" {
 
 resource "aws_lb_target_group" "ecs" {
   name        = "${local.name}-ecs-tg"
-  port        = 8080
+  port        = var.container_port
   protocol    = "TCP"
   vpc_id      = aws_vpc.this.id
   target_type = "ip"
