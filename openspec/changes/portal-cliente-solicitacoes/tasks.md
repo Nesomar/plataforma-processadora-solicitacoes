@@ -9,7 +9,7 @@
 - [x] 1.7 Módulo Terraform: ECS cluster/service/task-def (esqueleto, sem app ainda) + IAM roles
 - [x] 1.8 docker-compose com ministack cobrindo ECS/API Gateway/DynamoDB/S3/SQS/Cognito
 - [x] 1.9 Validar suporte do ministack a NLB/VPC Link (spike — ver Open Questions em design.md); documentar gap se houver
-- [ ] 1.10 Code review da etapa
+- [x] 1.10 Code review da etapa
 
 ## 2. Backend esqueleto + client-auth (branch `feature/client-auth`)
 
