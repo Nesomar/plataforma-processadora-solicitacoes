@@ -20,42 +20,60 @@ export function DadosPessoaisForm({
   }
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="form">
       <h2>Dados pessoais</h2>
-      <label>
-        Nome
+      <div className="field">
+        <label className="field__label" htmlFor="dp-nome">
+          Nome
+        </label>
         <input
+          id="dp-nome"
+          className="input"
           value={form.nome}
           onChange={(e) => setForm({ ...form, nome: e.target.value })}
           required
         />
-      </label>
-      <label>
-        CPF
+      </div>
+      <div className="field">
+        <label className="field__label" htmlFor="dp-cpf">
+          CPF
+        </label>
         <input
+          id="dp-cpf"
+          className="input input--mono"
           value={form.cpf}
           onChange={(e) => setForm({ ...form, cpf: e.target.value })}
           required
         />
-      </label>
-      <label>
-        Data de nascimento
+      </div>
+      <div className="field">
+        <label className="field__label" htmlFor="dp-nascimento">
+          Data de nascimento
+        </label>
         <input
+          id="dp-nascimento"
+          className="input"
           type="date"
           value={form.dataNascimento}
           onChange={(e) => setForm({ ...form, dataNascimento: e.target.value })}
           required
         />
-      </label>
-      <label>
-        Telefone
+      </div>
+      <div className="field">
+        <label className="field__label" htmlFor="dp-telefone">
+          Telefone
+        </label>
         <input
+          id="dp-telefone"
+          className="input"
           value={form.telefone}
           onChange={(e) => setForm({ ...form, telefone: e.target.value })}
           required
         />
-      </label>
-      <button type="submit">Continuar</button>
+      </div>
+      <button type="submit" className="button button--primary">
+        Continuar
+      </button>
     </form>
   );
 }

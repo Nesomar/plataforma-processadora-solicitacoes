@@ -1,9 +1,10 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { login } from "../auth/cognito";
 import { tokenStore } from "../auth/tokenStore";
 import { perfilApi } from "../api/perfilApi";
+import { EntradaShell } from "./EntradaShell";
 
 export function LoginPage() {
   const [email, setEmail] = useState("");
@@ -36,30 +37,50 @@ export function LoginPage() {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
+    <EntradaShell
+      footer={
+        <p className="entrada__footer">
+          Ainda não tem conta? <Link to="/cadastro">Criar conta</Link>
+        </p>
+      }
+    >
       <h1>Entrar</h1>
-      <label>
-        Email
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-      </label>
-      <label>
-        Senha
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-      </label>
-      {error && <p role="alert">{error}</p>}
-      <button type="submit" disabled={loading}>
-        {loading ? "Entrando..." : "Entrar"}
-      </button>
-    </form>
+      <form onSubmit={handleSubmit} className="form">
+        <div className="field">
+          <label className="field__label" htmlFor="login-email">
+            Email
+          </label>
+          <input
+            id="login-email"
+            className="input"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </div>
+        <div className="field">
+          <label className="field__label" htmlFor="login-password">
+            Senha
+          </label>
+          <input
+            id="login-password"
+            className="input"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
+        {error && (
+          <p className="alert" role="alert">
+            {error}
+          </p>
+        )}
+        <button type="submit" className="button button--primary" disabled={loading}>
+          {loading ? "Entrando..." : "Entrar"}
+        </button>
+      </form>
+    </EntradaShell>
   );
 }
