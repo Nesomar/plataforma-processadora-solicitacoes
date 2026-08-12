@@ -26,24 +26,36 @@ export function AnexosStep({ onContinuar }: { onContinuar: () => void }) {
   }
 
   return (
-    <div>
+    <div className="form">
       <h2>Anexos</h2>
-      <form onSubmit={handleSubmit}>
-        <label>
-          Documento (PDF)
+      <form onSubmit={handleSubmit} className="form">
+        <div className="field">
+          <label className="field__label" htmlFor="anexo-arquivo">
+            Documento (PDF)
+          </label>
           <input
+            id="anexo-arquivo"
+            className="input"
             type="file"
             accept="application/pdf"
             onChange={(e) => setArquivo(e.target.files?.[0] ?? null)}
           />
-        </label>
-        {error && <p role="alert">{error}</p>}
-        {enviado && <p>Arquivo enviado.</p>}
-        <button type="submit" disabled={!arquivo || enviando}>
+        </div>
+        {error && (
+          <p className="alert" role="alert">
+            {error}
+          </p>
+        )}
+        {enviado && (
+          <p className="confirm" role="status">
+            Arquivo enviado.
+          </p>
+        )}
+        <button type="submit" className="button button--secondary" disabled={!arquivo || enviando}>
           {enviando ? "Enviando..." : "Enviar"}
         </button>
       </form>
-      <button type="button" onClick={onContinuar}>
+      <button type="button" className="button button--primary" onClick={onContinuar}>
         Continuar
       </button>
     </div>

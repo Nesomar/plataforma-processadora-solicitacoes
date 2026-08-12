@@ -16,17 +16,51 @@ export function SolicitacaoDetailPage() {
       .catch(() => setError("Solicitação não encontrada."));
   }, [id]);
 
-  if (error) return <p role="alert">{error}</p>;
-  if (!solicitacao) return <p>Carregando...</p>;
-
   return (
-    <div>
-      <h1>Solicitação {solicitacao.id}</h1>
-      <p>Status: {solicitacao.status}</p>
-      <p>Criada em: {new Date(solicitacao.criadaEm).toLocaleString("pt-BR")}</p>
-      <p>Nome: {solicitacao.nome}</p>
-      <p>Cidade/UF: {solicitacao.cidade}/{solicitacao.uf}</p>
-      <p>Renda mensal: {solicitacao.rendaMensal}</p>
-    </div>
+    <>
+      <header className="topbar">
+        <span className="topbar__brand">Portal do Cliente</span>
+        {solicitacao && <span className="protocolo">{solicitacao.id}</span>}
+      </header>
+      <div className="shell shell--painel">
+        {error && (
+          <p className="alert" role="alert">
+            {error}
+          </p>
+        )}
+        {!error && !solicitacao && <p className="loading">Carregando...</p>}
+        {solicitacao && (
+          <div className="card">
+            <h1>Solicitação</h1>
+            <div className="detalhe-grid">
+              <div className="detalhe-grid__row">
+                <span className="detalhe-grid__label">Status</span>
+                <span className="detalhe-grid__value status-badge">{solicitacao.status}</span>
+              </div>
+              <div className="detalhe-grid__row">
+                <span className="detalhe-grid__label">Criada em</span>
+                <span className="detalhe-grid__value mono">
+                  {new Date(solicitacao.criadaEm).toLocaleString("pt-BR")}
+                </span>
+              </div>
+              <div className="detalhe-grid__row">
+                <span className="detalhe-grid__label">Nome</span>
+                <span className="detalhe-grid__value">{solicitacao.nome}</span>
+              </div>
+              <div className="detalhe-grid__row">
+                <span className="detalhe-grid__label">Cidade/UF</span>
+                <span className="detalhe-grid__value">
+                  {solicitacao.cidade}/{solicitacao.uf}
+                </span>
+              </div>
+              <div className="detalhe-grid__row">
+                <span className="detalhe-grid__label">Renda mensal</span>
+                <span className="detalhe-grid__value mono">{solicitacao.rendaMensal}</span>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </>
   );
 }

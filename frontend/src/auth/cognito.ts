@@ -3,6 +3,7 @@ import {
   CognitoUser,
   CognitoUserPool,
 } from "amazon-cognito-identity-js";
+import type { ISignUpResult } from "amazon-cognito-identity-js";
 
 const userPool = new CognitoUserPool({
   UserPoolId: import.meta.env.VITE_COGNITO_USER_POOL_ID,
@@ -37,6 +38,31 @@ export function login(email: string, password: string): Promise<LoginResult> {
         });
       },
       onFailure: (err) => reject(err),
+    });
+  });
+}
+
+export function signUp(email: string, password: string): Promise<ISignUpResult> {
+  return new Promise((resolve, reject) => {
+    userPool.signUp(email, password, [], [], (err, result) => {
+      if (err || !result) {
+        reject(err);
+        return;
+      }
+      resolve(result);
+    });
+  });
+}
+
+export function confirmSignUp(email: string, code: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const user = new CognitoUser({ Username: email, Pool: userPool });
+    user.confirmRegistration(code, true, (err) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+      resolve();
     });
   });
 }

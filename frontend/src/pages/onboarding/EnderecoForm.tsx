@@ -23,20 +23,25 @@ export function EnderecoForm({
   }
 
   function field(key: keyof Endereco, label: string, required = true) {
+    const id = `end-${key}`;
     return (
-      <label>
-        {label}
+      <div className="field">
+        <label className="field__label" htmlFor={id}>
+          {label}
+        </label>
         <input
+          id={id}
+          className="input"
           value={form[key]}
           onChange={(e) => setForm({ ...form, [key]: e.target.value })}
           required={required}
         />
-      </label>
+      </div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="form">
       <h2>Endereço</h2>
       {field("cep", "CEP")}
       {field("logradouro", "Logradouro")}
@@ -45,7 +50,9 @@ export function EnderecoForm({
       {field("bairro", "Bairro")}
       {field("cidade", "Cidade")}
       {field("uf", "UF")}
-      <button type="submit">Continuar</button>
+      <button type="submit" className="button button--primary">
+        Continuar
+      </button>
     </form>
   );
 }

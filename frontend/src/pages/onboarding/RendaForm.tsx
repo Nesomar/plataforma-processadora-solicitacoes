@@ -16,11 +16,15 @@ export function RendaForm({
   }
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="form">
       <h2>Renda</h2>
-      <label>
-        Renda mensal
+      <div className="field">
+        <label className="field__label" htmlFor="renda-mensal">
+          Renda mensal
+        </label>
         <input
+          id="renda-mensal"
+          className="input input--mono"
           type="number"
           step="0.01"
           min="0"
@@ -28,16 +32,22 @@ export function RendaForm({
           onChange={(e) => setRendaMensal(e.target.value)}
           required
         />
-      </label>
-      <label>
-        Ocupação
+      </div>
+      <div className="field">
+        <label className="field__label" htmlFor="renda-ocupacao">
+          Ocupação
+        </label>
         <input
+          id="renda-ocupacao"
+          className="input"
           value={ocupacao}
           onChange={(e) => setOcupacao(e.target.value)}
           required
         />
-      </label>
-      <button type="submit">Concluir</button>
+      </div>
+      <button type="submit" className="button button--primary">
+        Concluir
+      </button>
     </form>
   );
 }

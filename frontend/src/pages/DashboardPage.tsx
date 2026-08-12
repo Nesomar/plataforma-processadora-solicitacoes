@@ -41,22 +41,38 @@ export function DashboardPage() {
   }
 
   return (
-    <div>
-      <h1>Minhas solicitações</h1>
-      <button type="button" onClick={novaSolicitacao} disabled={criando}>
-        {criando ? "Criando..." : "Nova solicitação"}
-      </button>
-      {error && <p role="alert">{error}</p>}
-      {solicitacoes && solicitacoes.length === 0 && <p>Nenhuma solicitação ainda.</p>}
-      <ul>
-        {solicitacoes?.map((s) => (
-          <li key={s.id}>
-            <Link to={`/solicitacoes/${s.id}`}>
-              {s.id} — {s.status}
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </div>
+    <>
+      <header className="topbar">
+        <span className="topbar__brand">Portal do Cliente</span>
+      </header>
+      <div className="shell shell--painel">
+        <div className="painel__header">
+          <h1>Minhas solicitações</h1>
+          <button type="button" className="button button--primary" onClick={novaSolicitacao} disabled={criando}>
+            {criando ? "Criando..." : "Nova solicitação"}
+          </button>
+        </div>
+        {error && (
+          <p className="alert" role="alert">
+            {error}
+          </p>
+        )}
+        {solicitacoes && solicitacoes.length === 0 && (
+          <p className="empty-state">Nenhuma solicitação ainda. Crie a primeira acima.</p>
+        )}
+        {solicitacoes && solicitacoes.length > 0 && (
+          <ul className="lista-solicitacoes">
+            {solicitacoes.map((s) => (
+              <li key={s.id} className="lista-solicitacoes__item">
+                <Link to={`/solicitacoes/${s.id}`} className="lista-solicitacoes__link">
+                  <span className="protocolo">{s.id}</span>
+                  <span className="status-badge">{s.status}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </>
   );
 }

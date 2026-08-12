@@ -14,6 +14,13 @@ import { AnexosStep } from "./AnexosStep";
 
 type WizardStep = OnboardingStep | "ANEXOS" | "loading" | null;
 
+const ETAPAS: { step: OnboardingStep | "ANEXOS"; label: string }[] = [
+  { step: "DADOS_PESSOAIS", label: "Dados pessoais" },
+  { step: "ENDERECO", label: "Endereço" },
+  { step: "RENDA", label: "Renda" },
+  { step: "ANEXOS", label: "Anexos" },
+];
+
 // Etapa exibida vem sempre do gate do backend (não de estado local do front) — é o
 // backend que decide onde retomar (specs/client-profile/spec.md). Anexos é etapa só do
 // front: o gate de perfil (backend) não depende dela.
@@ -54,35 +61,58 @@ export function OnboardingWizard() {
     }
   }
 
-  if (step === "loading") return <p role="alert">{error ?? "Carregando..."}</p>;
+  if (step === "loading") {
+    return <p className="loading">{error ?? "Carregando..."}</p>;
+  }
+
+  const indiceAtual = ETAPAS.findIndex((e) => e.step === step);
 
   return (
-    <div>
-      {error && <p role="alert">{error}</p>}
-      {step === "DADOS_PESSOAIS" && (
-        <DadosPessoaisForm
-          onSubmit={(dados: DadosPessoais) =>
-            handleSubmit(() => perfilApi.salvarDadosPessoais(dados))
-          }
-        />
-      )}
-      {step === "ENDERECO" && (
-        <EnderecoForm
-          onSubmit={(dados: Endereco) =>
-            handleSubmit(() => perfilApi.salvarEndereco(dados))
-          }
-        />
-      )}
-      {step === "RENDA" && (
-        <RendaForm
-          onSubmit={(dados: Renda) =>
-            handleSubmit(() => perfilApi.salvarRenda(dados))
-          }
-        />
-      )}
-      {step === "ANEXOS" && (
-        <AnexosStep onContinuar={() => navigate("/", { replace: true })} />
-      )}
+    <div className="shell shell--dossie">
+      <div className="progress-rail">
+        {ETAPAS.map((etapa, i) => (
+          <div
+            key={etapa.step}
+            className={`progress-step ${
+              i < indiceAtual ? "progress-step--done" : i === indiceAtual ? "progress-step--active" : ""
+            }`}
+          >
+            <div className="progress-step__bar" />
+            <span className="progress-step__label">{etapa.label}</span>
+          </div>
+        ))}
+      </div>
+      <div className="card step-enter" key={step}>
+        {error && (
+          <p className="alert" role="alert">
+            {error}
+          </p>
+        )}
+        {step === "DADOS_PESSOAIS" && (
+          <DadosPessoaisForm
+            onSubmit={(dados: DadosPessoais) =>
+              handleSubmit(() => perfilApi.salvarDadosPessoais(dados))
+            }
+          />
+        )}
+        {step === "ENDERECO" && (
+          <EnderecoForm
+            onSubmit={(dados: Endereco) =>
+              handleSubmit(() => perfilApi.salvarEndereco(dados))
+            }
+          />
+        )}
+        {step === "RENDA" && (
+          <RendaForm
+            onSubmit={(dados: Renda) =>
+              handleSubmit(() => perfilApi.salvarRenda(dados))
+            }
+          />
+        )}
+        {step === "ANEXOS" && (
+          <AnexosStep onContinuar={() => navigate("/", { replace: true })} />
+        )}
+      </div>
     </div>
   );
 }
