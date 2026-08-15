@@ -82,7 +82,7 @@ export function OnboardingWizard() {
           </div>
         ))}
       </div>
-      <div className="card step-enter" key={step}>
+      <div className="card step-enter" data-etapa={step} key={step}>
         {error && (
           <p className="alert" role="alert">
             {error}

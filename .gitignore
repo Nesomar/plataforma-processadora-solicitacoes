@@ -39,3 +39,6 @@ override.tf.json
 
 # Env gerado pelo terraform-init do docker-compose (outputs do ministack)
 infra/terraform/env/
+
+# Logs/snapshots de debug do Playwright MCP
+.playwright-mcp/
