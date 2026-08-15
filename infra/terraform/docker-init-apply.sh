@@ -36,11 +36,15 @@ mkdir -p env
 
 cat > env/backend.env <<EOF
 COGNITO_ISSUER_URI=$(terraform output -raw cognito_issuer_url)
+COGNITO_JWK_SET_URI=$(terraform output -raw cognito_jwk_set_uri)
 AWS_REGION=sa-east-1
 AWS_ENDPOINT_OVERRIDE=http://ministack:4566
+AWS_ACCESS_KEY_ID=test
+AWS_SECRET_ACCESS_KEY=test
 AWS_DYNAMODB_TABLE_NAME=$(terraform output -raw dynamodb_table_name)
 AWS_S3_ATTACHMENTS_BUCKET=$(terraform output -raw attachments_bucket_name)
 AWS_SQS_ATTACHMENTS_QUEUE_URL=$(terraform output -raw attachments_queue_url)
+CORS_ALLOWED_ORIGINS=http://localhost:5173
 EOF
 
 cat > env/frontend.env <<EOF
