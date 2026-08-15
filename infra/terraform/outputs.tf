@@ -14,6 +14,10 @@ output "cognito_issuer_url" {
   value = module.cognito.issuer_url
 }
 
+output "cognito_jwk_set_uri" {
+  value = module.cognito.jwk_set_uri
+}
+
 output "dynamodb_table_name" {
   value = module.dynamodb.table_name
 }

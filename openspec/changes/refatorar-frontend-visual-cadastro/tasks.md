@@ -102,3 +102,16 @@ de `/api` — ou seja, isso já quebrava antes desta change (nenhuma mudança aq
 "Nenhuma mudança de backend"). Reportado ao usuário como gap de ambiente pré-existente, não
 corrigido aqui. `.env.local` do frontend atualizado com os IDs reais do ministack desta subida
 do docker-compose (nota inline: mudam a cada `down`+`up`).
+
+**Fechamento da lacuna de CORS (sessão seguinte):** o gap de CORS reportado acima foi corrigido —
+`CorsConfigurationSource` adicionado em `SecurityConfig.kt` (`app.cors.allowed-origins` /
+`CORS_ALLOWED_ORIGINS`), issuer e JWKS do Cognito separados em outputs Terraform distintos
+(mismatch de `iss`: browser usa `localhost:4566`, backend precisa de `ministack:4566` como
+hostname interno do docker network), credenciais AWS dummy (`test`/`test`) adicionadas ao
+`backend.env` gerado pelo `docker-init-apply.sh`, e mapeamento explícito
+`@get:DynamoDbAttribute("PK"/"SK")` nos três `*Item` do DynamoDB (schema mismatch entre o nome do
+campo Kotlin e o atributo esperado). Com o `.env.local` do frontend realinhado ao pool ID
+recriado pelo ministack nesta subida, o fluxo completo (cadastro → confirmação via
+`AdminConfirmSignUp` → login → onboarding) foi validado ponta a ponta via Playwright, sem erros de
+CORS/console/network — onboarding renderizou a etapa "Dados pessoais" normalmente após o login.
+`./gradlew test` (backend) e `npm test`/`npm run build` (frontend) verdes antes do commit.
