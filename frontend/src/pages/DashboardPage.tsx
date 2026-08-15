@@ -64,9 +64,15 @@ export function DashboardPage() {
           <ul className="lista-solicitacoes">
             {solicitacoes.map((s) => (
               <li key={s.id} className="lista-solicitacoes__item">
-                <Link to={`/solicitacoes/${s.id}`} className="lista-solicitacoes__link">
+                <Link
+                  to={`/solicitacoes/${s.id}`}
+                  className="lista-solicitacoes__link"
+                  data-status={s.status}
+                >
                   <span className="protocolo">{s.id}</span>
-                  <span className="status-badge">{s.status}</span>
+                  <span className="status-badge" data-status={s.status}>
+                    {s.status}
+                  </span>
                 </Link>
               </li>
             ))}

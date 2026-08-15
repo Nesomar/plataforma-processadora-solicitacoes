@@ -1,31 +1,50 @@
 ---
 name: Portal do Cliente
-description: Portal bancário de onboarding e solicitações — Swiss minimalista, prova sempre visível.
+description: Portal bancário de onboarding e solicitações — caderneta financeira de abas coloridas, cor por etapa, protocolo carimbado.
 colors:
-  azul-acao: "#2563eb"
-  azul-acao-hover: "#1d4ed8"
-  laranja-atencao: "#ea580c"
-  fundo: "#f8fafc"
-  papel: "#ffffff"
-  tinta: "#1e293b"
-  linha: "#e2e8f0"
+  acao: "#2447c9"
+  acao-hover: "#1c39a3"
+  tab-dados: "#4338ca"
+  tab-dados-tint: "#e3e1fb"
+  tab-dados-ink: "#362f9e"
+  tab-endereco: "#047857"
+  tab-endereco-tint: "#d7f2e6"
+  tab-endereco-ink: "#036348"
+  tab-renda: "#92400e"
+  tab-renda-tint: "#faecd2"
+  tab-renda-ink: "#7a3609"
+  tab-anexos: "#9f1239"
+  tab-anexos-tint: "#fbdfe6"
+  tab-anexos-ink: "#870f30"
+  papel: "#fffefb"
+  fundo: "#f5f1e6"
+  tinta: "#201b13"
+  linha: "#ddd2b8"
+  linha-forte: "#b7a67c"
+  muted-tinta: "#6a5d44"
+  muted-bg: "#efe8d5"
   erro: "#b91c1c"
   erro-bg: "#fef2f2"
-  muted-bg: "#e9eff8"
-  muted-tinta: "#475569"
+  sucesso: "#15803d"
 typography:
   headline:
-    fontFamily: "Lexend, system-ui, 'Segoe UI', Roboto, sans-serif"
+    fontFamily: "IBM Plex Serif, Georgia, 'Times New Roman', serif"
     fontSize: "28px"
-    fontWeight: 600
+    fontWeight: 700
     lineHeight: 1.2
-    letterSpacing: "-0.3px"
+    letterSpacing: "-0.1px"
   title:
-    fontFamily: "Lexend, system-ui, 'Segoe UI', Roboto, sans-serif"
+    fontFamily: "IBM Plex Serif, Georgia, 'Times New Roman', serif"
     fontSize: "20px"
     fontWeight: 600
     lineHeight: 1.2
-    letterSpacing: "-0.2px"
+    letterSpacing: "0"
+  brand:
+    fontFamily: "IBM Plex Serif, Georgia, 'Times New Roman', serif"
+    fontSize: "17px"
+    fontWeight: 600
+    lineHeight: 1.3
+    letterSpacing: "0"
   body:
     fontFamily: "Source Sans 3, system-ui, 'Segoe UI', Roboto, sans-serif"
     fontSize: "16px"
@@ -55,11 +74,12 @@ typography:
     fontSize: "12px"
     fontWeight: 500
     lineHeight: 1.3
-    letterSpacing: "normal"
+    letterSpacing: "0.03em"
 rounded:
   container: "2px"
   control: "8px"
-  chip: "6px"
+  tab: "4px 4px 2px 2px"
+  pill: "999px"
 spacing:
   sm: "8px"
   md: "16px"
@@ -67,12 +87,12 @@ spacing:
   xl: "32px"
 components:
   button-primary:
-    backgroundColor: "{colors.azul-acao}"
+    backgroundColor: "{colors.acao}"
     textColor: "#ffffff"
     rounded: "{rounded.control}"
     padding: "11px 20px"
   button-primary-hover:
-    backgroundColor: "{colors.azul-acao-hover}"
+    backgroundColor: "{colors.acao-hover}"
   button-secondary:
     backgroundColor: "transparent"
     textColor: "{colors.tinta}"
@@ -87,185 +107,250 @@ components:
     backgroundColor: "{colors.papel}"
     rounded: "{rounded.container}"
     padding: "32px"
+  status-badge:
+    backgroundColor: "{colors.muted-bg}"
+    textColor: "{colors.muted-tinta}"
+    rounded: "{rounded.pill}"
+    padding: "3px 10px"
 ---
 
 # Design System: Portal do Cliente
 
 ## Overview
 
-**Creative North Star: "O Comprovante"**
+**Creative North Star: "A Caderneta"**
 
-O portal existe pra conduzir um processo burocrático sério (pedir crédito, entregar
-documentos, CPF, renda) em linguagem de gente, sem nunca fingir que não é sério. A
-metáfora que organiza o sistema inteiro é o comprovante bancário: número de protocolo
-sempre visível, valores alinhados, nada escondido atrás de um clique. Estrutura Swiss —
-grid disciplinado, alto contraste, zero sombra/gradiente — carrega essa seriedade; a cor
-é usada com parcimônia (azul só onde é de fato interativo, laranja só onde há pendência
-real do cliente) porque confiança vem de clareza, não de selo.
+Redesign completo (2026-08-15) — substitui o sistema Swiss-minimalista anterior ("O
+Comprovante", arquivado abaixo em histórico) por pedido explícito do usuário por "mais
+cores, mais interativo". Mantém o produto (onboarding por etapas retomável, solicitações
+rastreáveis) e a seriedade do domínio (CPF, renda, documentos), mas troca a metáfora
+organizadora: o portal agora se parece com uma caderneta financeira física — cada etapa
+do dossiê e cada seção do sistema tem sua própria tinta, como abas coloridas num livro-
+razão ou numa caderneta de poupança. O protocolo de solicitação, que antes vivia só num
+chip neutro, agora é carimbado — um retângulo de tinta rotacionado, com anel duplo, que
+"bate" na tela com uma animação de carimbo.
 
-Rejeitado explicitamente: visual de internet banking datado (denso, cinza, ícones anos
-2010); estética cripto/fintech hyped (dark mode dramático, neon); gradiente-roxo genérico
-de interface gerada por IA.
+Direção sorteada via `concept-seed.mjs --scope direction --mode operate` (seed
+`fd9f56be`, candidato 6 da lista própria) e pesada contra 3 challengers do catálogo
+(Metro Tiles, Drum Machine Step Row, Cassette J-Card) — venceu em identificação de
+audiência (caderneta/talão é cultura financeira brasileira reconhecível) e em clareza de
+produto (é a única direção que cobre os 3 capítulos do portal com uma gramática coerente:
+aba = etapa, cor = status).
+
+Rejeitado explicitamente (herdado do sistema anterior, ainda vale): visual de internet
+banking datado; estética cripto/fintech hyped (dark mode dramático, neon); gradiente-roxo
+genérico de interface gerada por IA.
 
 **Key Characteristics:**
-- Estrutura em 3 capítulos (Entrada / Dossiê / Painel), cada um com sua própria largura de shell
-- Número de protocolo em mono, persistente desde a lista até o detalhe
-- Zero sombra — profundidade vem de borda de 1px e contraste de fundo, nunca de blur
-- Motion mínimo: só transição de etapa no wizard e confirmação inline de ação
+- 4 tintas nomeadas, uma por etapa do onboarding — reaproveitadas em status/badges em
+  todo o resto do sistema, fechando o círculo entre onboarding e painel.
+- Protocolo carimbado — chip com borda dupla, leve rotação, animação de "batida" na
+  entrada (`@keyframes carimbo`).
+- Papel pautado — textura de linhas horizontais muito sutil (`rgb(150 124 74 / 12%)`) no
+  fundo da página inteira, nunca dentro do card (evita colidir com conteúdo).
+- Zero sombra segue valendo — profundidade só por borda/contraste/cor, nunca blur.
+- Motion como gesto físico, não decoração: cada interação cita um gesto do mundo
+  ledger — carimbo bate, aba pulsa ao ficar ativa, lançamento da lista desliza ao passar
+  o mouse. Não é uma entrada idêntica repetida — cada componente tem seu próprio gesto.
 
 ## Colors
 
-Paleta restrita (Restrained): neutros dominam, azul-ação é o único acento com permissão
-de aparecer em elementos interativos, laranja é reservado e raro.
+Full palette (4 tintas nomeadas + 1 ação): cada tinta de etapa é uma cor completa (não um
+acento raro) — solid/tint/ink por tinta, igual ao sistema anterior fazia só com azul.
+Ainda restrito no sentido de que cada cor tem um dono fixo (uma etapa), nunca é escolha
+estética solta.
 
-### Primary
-- **Azul-ação** (`#2563eb`, hover `#1d4ed8`): todo elemento interativo primário — botões
-  `.button--primary`, foco de input, links. Nunca usado como cor de fundo de região grande.
+### Ação
+- **Acao** (`#2447c9`, hover `#1c39a3`): todo elemento interativo primário — botões
+  `.button--primary`, link, foco de input. Deliberadamente próxima da família azul-índigo
+  do sistema anterior (continuidade de marca), mas distinta o bastante de `tab-dados` pra
+  nunca ser confundida com um chip de etapa.
 
-### Secondary
-- **Laranja-atenção** (`#ea580c`): reservado só pra ação pendente real do cliente (ainda
-  não usado nas telas desta fase — entra quando houver estado de "ação necessária"
-  explícito, ex. documento rejeitado). Não decorativo.
+### Abas por etapa (a assinatura do sistema)
+- **Tab-dados** (`#4338ca` / tint `#e3e1fb` / ink `#362f9e`): Dados pessoais.
+- **Tab-endereco** (`#047857` / tint `#d7f2e6` / ink `#036348`): Endereço.
+- **Tab-renda** (`#92400e` / tint `#faecd2` / ink `#7a3609`): Renda. Reaproveitada hoje
+  como cor do único status real do backend (`ABERTA` → "em andamento" lê melhor em âmbar
+  que em azul neutro).
+- **Tab-anexos** (`#9f1239` / tint `#fbdfe6` / ink `#870f30`): Anexos.
 
-### Neutral
-- **Tinta** (`#1e293b`): texto principal, títulos.
-- **Fundo** (`#f8fafc`): fundo de página, atrás dos cards.
-- **Papel** (`#ffffff`): superfície de card, sem sombra.
-- **Linha** (`#e2e8f0`): toda borda — cards, inputs, divisores de lista/tabela.
-- **Muted-tinta** (`#475569`): texto secundário/rótulo (ajustado de slate-500 pra
-  slate-600 nesta implementação — o tom mais claro falhava contraste AA sobre
-  `muted-bg`; ver Named Rule abaixo).
-- **Muted-bg** (`#e9eff8`): fundo de chip (protocolo, status).
-- **Erro** (`#b91c1c`): texto/borda de alerta (ajustado de red-600 pra red-700 nesta
-  implementação pelo mesmo motivo de contraste).
-- **Erro-bg** (`#fef2f2`): fundo de alerta.
+Ordem fixa — nunca reordenar as 4 tintas; `.progress-step:nth-child(n)` no CSS depende da
+ordem do array `ETAPAS` em `OnboardingWizard.tsx` bater com a ordem aqui.
+
+### Neutral (papel pautado)
+- **Tinta** (`#201b13`): texto principal, títulos.
+- **Fundo** (`#f5f1e6`): fundo de página — aveia quente, não cinza frio.
+- **Papel** (`#fffefb`): superfície de card, sem sombra.
+- **Linha** (`#ddd2b8`): borda padrão — cards, inputs, divisores de lista.
+- **Linha-forte** (`#b7a67c`): divisores tracejados do `detalhe-grid` (mais presente que
+  `--linha`, textura de "linha de lançamento" de livro-razão).
+- **Muted-tinta** (`#6a5d44`): texto secundário/rótulo.
+- **Muted-bg** (`#efe8d5`): fundo de chip neutro (status sem tinta própria).
+- **Erro** (`#b91c1c`) / **Erro-bg** (`#fef2f2`): mantidos do sistema anterior, valores
+  inalterados — deliberadamente não reaproveitam nenhuma tab-color, pra erro nunca se
+  confundir com "estou na etapa Anexos" (carmim) num alerta dentro daquele passo.
+- **Sucesso** (`#15803d`): `.confirm`, inalterado do sistema anterior.
 
 ### Named Rules
-**The Proof-Chip Rule.** Todo identificador que prova que algo está sendo processado
-(protocolo, status) vive num chip mono com fundo `muted-bg` — nunca só texto solto, nunca
-escondido atrás de navegação extra.
+**The Tab-Owns-a-Step Rule.** Uma tab-color é always tied a uma etapa nomeada real, nunca
+escolhida por preferência estética solta. Ao adicionar uma 5ª etapa, uma 5ª tinta precisa
+ser definida com o mesmo trio solid/tint/ink e checada em contraste antes de entrar.
 
-**The AA-Is-The-Floor Rule.** Qualquer tom que passar como "muted" ou "de alerta" precisa
-bater 4.5:1 contra o fundo real onde ele aparece (não contra branco puro). `#64748b` e
-`#dc2626` (as sugestões originais do brief) falhavam contra `muted-bg`/`erro-bg` nesta
-implementação; foram escurecidos um degrau. Verifique de novo se `muted-bg`/`erro-bg`
-mudarem de valor.
+**The AA-Is-The-Floor Rule.** (herdada) Qualquer tom "muted" ou "de alerta" precisa bater
+4.5:1 contra o fundo real onde aparece. Todos os pares tab-ink/tab-tint e muted-tinta/papel
+|fundo|muted-bg foram verificados nesta implementação (6.15–8.02:1). Reverifique se
+qualquer tint/fundo mudar de valor.
+
+**The Stamp-Not-Chip Rule.** `.protocolo` não é mais um chip neutro — é um carimbo (borda
+dupla, leve rotação, animação de entrada). Nunca reduzir de volta a texto solto: é a prova
+de que a solicitação existe, tem que parecer "batida", não impressa.
 
 ## Typography
 
-**Display Font:** Lexend (fallback: system-ui, Segoe UI, Roboto, sans-serif)
+**Display Font:** IBM Plex Serif (fallback: Georgia, Times New Roman, serif)
 **Body Font:** Source Sans 3 (fallback: system-ui, Segoe UI, Roboto, sans-serif)
 **Label/Mono Font:** IBM Plex Mono
 
-**Character:** Lexend é geométrica e comedida — usada só em `h1`/`h2`, nunca em
-parágrafo. Source Sans 3 carrega todo o corpo, label e botão — pareamento desenhado pra
-legibilidade/acessibilidade (finance/enterprise). IBM Plex Mono existe só pra números que
-provam algo: protocolo, CPF, data, renda, status — como um extrato bancário, nunca pra
-texto corrido.
+**Character:** IBM Plex Serif substitui Lexend — família do mesmo desenhista da Plex Mono
+já usada em protocolo/CPF, dando ao título peso de registro/livro-razão sem introduzir uma
+terceira família não relacionada. Usado só em `h1`/`h2`/`.topbar__brand`, nunca em
+parágrafo. Source Sans 3 segue carregando corpo/label/botão — legibilidade AA/AAA em
+formulário financeiro não é negociável. IBM Plex Mono segue restrita a valores que provam
+algo (protocolo, CPF, data, renda, status) — nunca texto corrido.
 
 ### Hierarchy
-- **Headline** (600, 28px, 1.2): `h1` — título de página/tela.
-- **Title** (600, 20px, 1.2): `h2` — título de seção/etapa dentro de um card.
-- **Body** (400, 16px, 1.5): texto de formulário, parágrafo, item de lista, `.topbar__brand`.
-- **Emphasis** (600, 15px, 1.4): `.button`, `.detalhe-grid__row` — texto que pede peso sem
-  subir de tamanho.
+- **Headline** (700, 28px, 1.2): `h1`.
+- **Title** (600, 20px, 1.2): `h2`.
+- **Brand** (600, 17px, 1.3): `.topbar__brand` — subiu de 16 pra 17px nesta implementação,
+  serif precisa de um pelo mais de tamanho que sans pra manter presença equivalente.
+- **Body** (400, 16px, 1.5): formulário, parágrafo, item de lista.
+- **Emphasis** (600, 15px, 1.4): `.button`, `.detalhe-grid__row`.
 - **Label** (500, 14px): `.field__label`, `.alert`, `.confirm`, `.entrada__footer`.
-- **Caption** (400, 13px): `.field__hint` — texto de apoio abaixo do campo.
-- **Micro** (500, 12px): `.progress-step__label`, texto do chip `.status-badge`.
-- **Mono/Data** (400–500, 12–15px, `font-variant-numeric: tabular-nums`): `.mono`,
-  `.protocolo`, `.detalhe-grid__value.mono`, `.input--mono` — qualquer valor numérico ou
-  código que precisa alinhar verticalmente. Reusa os tamanhos acima (13px pro chip de
-  protocolo, 15px pro valor de dinheiro no detalhe) trocando só a família pra IBM Plex Mono.
+- **Caption** (400, 13px): `.field__hint`.
+- **Micro** (500, 12px, tracking 0.03em): `.progress-step__label`, `.status-badge` — agora
+  com `text-transform: uppercase` e tracking (antes era case normal sem tracking).
+- **Mono/Data**: `.mono`, `.protocolo`, `.detalhe-grid__value.mono`, `.input--mono`.
 
 ### Named Rules
-**The Never-Running-Text Rule.** IBM Plex Mono nunca aparece em frase corrida ou label —
-só em valor isolado (protocolo, CPF, data, dinheiro, status).
+**The Never-Running-Text Rule.** (herdada, inalterada) IBM Plex Mono nunca em frase
+corrida ou label — só em valor isolado.
 
 ## Layout
 
-Três shells de largura fixa, um por capítulo da experiência:
-- `.shell--entrada` (380px, centralizado vertical e horizontalmente): login, cadastro,
-  confirmação — coluna única, sem distração.
-- `.shell--dossie` (560px): onboarding — form dentro de um card, com `.progress-rail`
-  acima mostrando as etapas pelo nome real, não número.
-- `.shell--painel` (800px): dashboard e detalhe de solicitação — mais denso, listas e
-  grids de campo/valor.
-
-Padding lateral cai de 20px pra 16px abaixo de 600px; nenhum shell tem largura mínima
-que force scroll horizontal em mobile.
+Inalterado do sistema anterior — 3 shells de largura fixa por capítulo
+(`.shell--entrada` 380px / `.shell--dossie` 560px / `.shell--painel` 800px). O redesign é
+inteiramente de superfície (cor, tipo, textura, motion); topologia e composição não
+mudaram.
 
 ## Elevation & Depth
 
-Sistema inteiramente flat. Nenhum `box-shadow` em nenhum componente — profundidade vem só
-de borda de 1px (`--linha`) e do contraste entre `--papel` e `--fundo`. Decisão do brief
-(Swiss/Minimalism), não uma omissão.
+Ainda flat — nenhum `box-shadow` com blur em nenhum componente. Uma exceção deliberada e
+nomeada: `.protocolo` usa `box-shadow` de anel duplo com **zero blur** (`0 0 0 2px`, `0 0
+0 1px`) pra simular a borda de um carimbo — isso não é elevação, é um device gráfico (ver
+Stamp-Not-Chip Rule); não abre precedente pra sombra com blur em outro componente.
 
 ### Named Rules
-**The No-Shadow Rule.** Nenhum componente novo introduz `box-shadow`. Se precisar
-separar uma superfície, use borda de 1px ou mudança de fundo, nunca sombra.
+**The No-Blur-Shadow Rule** (renomeada de "No-Shadow" pra ser precisa: zero-blur rings
+são permitidos como device gráfico nomeado — carimbo — nunca como elevação; blur
+continua banido em todo componente).
 
 ## Shapes
 
-Raio em duas camadas, desvio deliberado do "zero-radius" Swiss padrão: 2px em
-containers/cards (`.card`, `.shell` — disciplina), 6–8px em controles interativos
-(`.input`, `.button`, chips — alvo de toque confortável). Bordas sempre 1px sólida em
-`--linha`, nunca dupla ou tracejada.
+- **Container** (2px): `.card`, `.shell`.
+- **Control** (8px): `.input`, `.button`.
+- **Tab** (`4px 4px 2px 2px`): topo arredondado, base quase reta — `.progress-step__bar` e
+  a aba de lançamento em `.lista-solicitacoes__link::before`. Nova forma nesta
+  implementação: simula uma aba de fichário/caderneta saindo da borda.
+- **Pill** (999px): `.status-badge` — trocou de 6px pra pílula completa nesta
+  implementação, lendo mais como "selo/carimbo de status" que como chip retangular.
 
 ## Components
 
 ### Buttons
-- **Shape:** 8px de raio.
-- **Primary** (`.button--primary`): fundo `--azul-acao`, texto branco, `11px 20px`.
-- **Hover/Focus:** primary escurece pra `--azul-acao-hover` no hover; todo elemento
-  focável ganha `outline: 2px solid var(--foco)` com 2px de offset no `:focus-visible`
-  (nunca só troca de cor de borda).
-- **Secondary** (`.button--secondary`): transparente, borda 1px `--linha`, texto
-  `--tinta`.
-- **Link** (`.button--link`): sem fundo, texto `--azul-acao` sublinhado — usado só pra
-  ação secundária de navegação (ex. "Criar conta" no rodapé do login).
+Inalterado na forma (8px raio, `.button--primary`/`--secondary`/`--link`); cor de base
+trocou de `--azul-acao` pra `--acao`. Novo: `:active` aplica `translateY(1px)` — feedback
+de pressão, ausente no sistema anterior.
 
 ### Cards / Containers
-- **Corner Style:** 2px.
-- **Background:** `--papel` sobre `--fundo`.
-- **Shadow Strategy:** nenhuma — ver Elevation & Depth.
-- **Border:** 1px sólida `--linha`.
-- **Internal Padding:** 32px (24px abaixo de 600px).
+- **Corner Style:** 2px, inalterado.
+- **Lombada colorida** (`.shell--entrada .card::before`): faixa de 5px no topo do card de
+  Entrada, gradiente sólido nas 4 tintas do sistema em blocos de 25% cada — não é um
+  gradiente suave (banido — "gradiente genérico de IA"), é 4 blocos de cor sólida lado a
+  lado, como a lombada de um fichário revelando as divisórias internas.
+- **Aba do card ativo** (`.card[data-etapa="..."]`): no dossiê, o card do passo atual
+  ganha `border-top: 3px solid` na tinta daquela etapa — o card "veste" a cor da aba que
+  está aberta.
 
 ### Inputs / Fields
-- **Style:** borda 1px `--linha`, fundo `--papel`, raio 8px, `10px 12px` de padding.
-  `.input--mono` troca a fonte pra IBM Plex Mono (usado em CPF, renda).
-- **Focus:** borda muda pra `--azul-acao` + halo `box-shadow: 0 0 0 3px rgb(37 99 235 /
-  15%)`.
-- **Error:** mensagem em `.alert` (`role="alert"`) logo abaixo do form — nunca só borda
-  vermelha no input isolado.
-- **Label:** sempre `<label htmlFor>` associado ao `id` do input — nunca placeholder-only.
+Inalterado na forma; halo de foco recalculado pra `--acao` (`rgb(36 71 201 / 15%)`).
 
 ### Navigation
-Sem navegação persistente lateral/superior complexa nesta fase — só `.topbar` simples
-(marca + chip de protocolo quando aplicável) nas telas do capítulo Painel. Entrada e
-Dossiê não têm topbar (foco total no card único).
+Inalterado — `.topbar` simples em Painel, sem navegação persistente lateral.
 
 ### Progress Rail (signature component)
-Trilha de progresso do onboarding (`.progress-rail`): uma barra fina por etapa, rotulada
-com o nome real da etapa (Dados pessoais / Endereço / Renda / Anexos) — nunca números
-01/02/03, porque a ordem aqui carrega informação real de gate do backend. Etapa ativa e
-concluída ganham `--azul-acao` na barra; label ativo fica em `--tinta` e negrito, as
-demais em `--muted-tinta`.
+`.progress-rail`: agora cada barra é mais alta (10px vs 3px antigo), topo arredondado
+(forma "tab"), e cada uma das 4 posições fixas tem sua própria tinta (`:nth-child`
+amarrado à ordem de `ETAPAS`). Etapa ativa recebe `transform: scaleY(1.3)` — pulso sutil,
+não só troca de cor. Label ativo herda a `-ink` da própria tinta, não mais um `--tinta`
+genérico.
+
+### Status Badge
+Pílula (999px), maiúsculas, tracking. `data-status="ABERTA"` pinta com `tab-renda-tint`/
+`-ink`. Hoje só existe 1 valor real no backend (`SolicitacaoStatus.ABERTA`); o atributo
+`data-status` já está no markup pra quando o backend adicionar mais valores — só falta
+adicionar a regra CSS correspondente, sem precisar tocar em JSX de novo.
+
+### Lançamento de lista (`.lista-solicitacoes__link`)
+Novo: uma aba pequena (`::before`, mesma forma do progress-step__bar) à esquerda de cada
+linha, colorida por `data-status`. Deliberadamente **não** é um `border-left` — esse
+padrão é banido pelo craft floor do Impeccable (accent border genérico em list item); a
+forma de aba reaproveita a mesma geometria do progress-rail em vez de inventar um segundo
+device visual pro mesmo conceito de "cor = status".
+
+## Motion
+
+Um gesto por componente, cada um citando algo físico do mundo caderneta — não um
+"authored moment" único, mas um vocabulário coerente:
+- **Carimbo** (`.protocolo`, `@keyframes carimbo`): entra com overshoot de rotação/escala
+  e assenta — bounce easing (`cubic-bezier(0.34, 1.56, 0.64, 1)`) é intencional aqui,
+  citando o impacto físico de um carimbo de tinta batendo no papel; não usar esse easing
+  em nenhum outro componente sem a mesma justificativa literal.
+- **Aba ativa** (`.progress-step--active .progress-step__bar`): `scaleY` — puxa como uma
+  aba de fichário sendo levantada.
+- **Lançamento** (`.lista-solicitacoes__link:hover`): `translateX(2px)` — desliza como
+  virar a página.
+- **Botão** (`.button:active`): `translateY(1px)` — feedback de pressão física.
+
+`prefers-reduced-motion` zera tudo, herdado e inalterado.
 
 ## Do's and Don'ts
 
 ### Do:
-- **Do** usar `--azul-acao` só em elementos interativos (botão, foco, link) — nunca como
-  fundo de região grande.
-- **Do** rotular etapas de fluxo pelo nome real da tarefa, nunca por número de ordem.
-- **Do** usar IBM Plex Mono só em protocolo/CPF/data/renda/status.
-- **Do** conferir contraste contra o fundo real do componente (não contra branco) antes
-  de reusar `--muted-tinta` ou `--erro` num novo contexto.
+- **Do** dar a cada nova etapa/seção sua própria tinta nomeada (solid/tint/ink) em vez de
+  reusar uma tab-color existente pra outro conceito.
+- **Do** manter `data-status`/`data-etapa` como o mecanismo de cor dinâmica — nunca
+  hard-code cor de status em classe condicional no JSX.
+- **Do** conferir contraste contra o fundo real (não branco) antes de reusar qualquer
+  `-ink`/`-tint` num novo contexto.
+- **Do** rotular etapas de fluxo pelo nome real, nunca por número — herdado, ainda vale.
 
 ### Don't:
-- **Don't** adicionar `box-shadow` a card, botão ou input.
-- **Don't** usar `--laranja-atencao` decorativamente — só quando existe uma pendência
-  real e nomeada do cliente.
-- **Don't** esconder o número de protocolo atrás de navegação extra — ele é a prova, tem
-  que estar no primeiro olhar da tela de lista e de detalhe.
+- **Don't** usar `border-left`/`border-right` colorido em list item, card ou alert — usar
+  a forma de aba (`border-radius: 4px 4px 2px 2px`, elemento próprio) em vez disso.
+- **Don't** adicionar `box-shadow` com blur a nenhum componente — o anel do carimbo é a
+  única exceção nomeada, e é zero-blur.
+- **Don't** usar o bounce easing do carimbo em outro componente sem a mesma justificativa
+  de gesto físico literal.
+- **Don't** esconder o protocolo atrás de navegação extra — continua sendo a prova,
+  primeiro olhar da lista e do detalhe.
 - **Don't** usar mono pra texto corrido ou label.
+
+---
+
+## Histórico
+
+**"O Comprovante" (2026-08-11 até 2026-08-15):** sistema Swiss-minimalista anterior —
+paleta restrita a um único azul de ação + laranja raro, Lexend em títulos, zero cor fora
+de elementos interativos. Substituído por pedido explícito do usuário por um sistema mais
+colorido e interativo. Arquivo original preservado no histórico do git
+(`git show 32fda2d:DESIGN.md`) para referência.

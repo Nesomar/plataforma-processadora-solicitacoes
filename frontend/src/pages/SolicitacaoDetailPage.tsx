@@ -35,7 +35,9 @@ export function SolicitacaoDetailPage() {
             <div className="detalhe-grid">
               <div className="detalhe-grid__row">
                 <span className="detalhe-grid__label">Status</span>
-                <span className="detalhe-grid__value status-badge">{solicitacao.status}</span>
+                <span className="detalhe-grid__value status-badge" data-status={solicitacao.status}>
+                  {solicitacao.status}
+                </span>
               </div>
               <div className="detalhe-grid__row">
                 <span className="detalhe-grid__label">Criada em</span>
