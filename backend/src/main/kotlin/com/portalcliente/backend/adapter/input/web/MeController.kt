@@ -11,6 +11,6 @@ data class MeResponse(val clienteId: String, val email: String?)
 class MeController {
 
     @GetMapping("/api/me")
-    fun me(@AuthenticationPrincipal jwt: Jwt): MeResponse =
+    suspend fun me(@AuthenticationPrincipal jwt: Jwt): MeResponse =
         MeResponse(clienteId = jwt.clienteId(), email = jwt.getClaimAsString("email"))
 }

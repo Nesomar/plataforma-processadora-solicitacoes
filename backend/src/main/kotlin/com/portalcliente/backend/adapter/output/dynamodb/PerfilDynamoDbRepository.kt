@@ -7,7 +7,7 @@ import com.portalcliente.backend.domain.Renda
 import com.portalcliente.backend.port.output.PerfilRepository
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Repository
-import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedAsyncClient
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema
 import java.math.BigDecimal
 
@@ -16,15 +16,15 @@ private fun partitionKey(clienteId: String) = "CLIENTE#$clienteId"
 
 @Repository
 class PerfilDynamoDbRepository(
-    enhancedClient: DynamoDbEnhancedClient,
+    enhancedClient: DynamoDbEnhancedAsyncClient,
     @Value("\${aws.dynamodb.table-name}") tableName: String,
 ) : DynamoDbRepository<PerfilItem>(enhancedClient, tableName, TableSchema.fromBean(PerfilItem::class.java)),
     PerfilRepository {
 
-    override fun buscar(clienteId: String): Perfil? =
+    override suspend fun buscar(clienteId: String): Perfil? =
         findByKey(partitionKey(clienteId), SORT_KEY)?.toDomain()
 
-    override fun salvar(perfil: Perfil): Perfil {
+    override suspend fun salvar(perfil: Perfil): Perfil {
         save(perfil.toItem())
         return perfil
     }

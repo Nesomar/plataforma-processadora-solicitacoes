@@ -8,7 +8,7 @@ import com.portalcliente.backend.domain.SolicitacaoStatus
 import com.portalcliente.backend.port.output.SolicitacaoRepository
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Repository
-import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedAsyncClient
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema
 import java.math.BigDecimal
 import java.time.Instant
@@ -19,24 +19,24 @@ private fun sortKey(id: String) = "$SORT_PREFIX$id"
 
 @Repository
 class SolicitacaoDynamoDbRepository(
-    enhancedClient: DynamoDbEnhancedClient,
+    enhancedClient: DynamoDbEnhancedAsyncClient,
     @Value("\${aws.dynamodb.table-name}") tableName: String,
 ) : DynamoDbRepository<SolicitacaoItem>(enhancedClient, tableName, TableSchema.fromBean(SolicitacaoItem::class.java)),
     SolicitacaoRepository {
 
-    override fun salvar(solicitacao: Solicitacao): Solicitacao {
+    override suspend fun salvar(solicitacao: Solicitacao): Solicitacao {
         save(solicitacao.toItem())
         return solicitacao
     }
 
     // SK é "SOLICITACAO#{uuid}" — ordem natural do DynamoDB não é cronológica, então
     // ordena por criadaEm aqui (mais recente primeiro).
-    override fun listarPorCliente(clienteId: String): List<Solicitacao> =
+    override suspend fun listarPorCliente(clienteId: String): List<Solicitacao> =
         queryBySortPrefix(partitionKey(clienteId), SORT_PREFIX)
             .map { it.toDomain() }
             .sortedByDescending { it.criadaEm }
 
-    override fun buscarPorId(clienteId: String, id: String): Solicitacao? =
+    override suspend fun buscarPorId(clienteId: String, id: String): Solicitacao? =
         findByKey(partitionKey(clienteId), sortKey(id))?.toDomain()
 
     private fun Solicitacao.toItem(): SolicitacaoItem {

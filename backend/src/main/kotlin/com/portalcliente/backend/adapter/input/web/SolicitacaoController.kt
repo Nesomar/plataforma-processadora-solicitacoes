@@ -40,17 +40,17 @@ data class SolicitacaoResponse(
 class SolicitacaoController(private val useCase: SolicitacaoUseCase) {
 
     @PostMapping
-    fun criar(@AuthenticationPrincipal jwt: Jwt): ResponseEntity<SolicitacaoResponse> {
+    suspend fun criar(@AuthenticationPrincipal jwt: Jwt): ResponseEntity<SolicitacaoResponse> {
         val solicitacao = useCase.criar(jwt.clienteId())
         return ResponseEntity.status(HttpStatus.CREATED).body(SolicitacaoResponse.de(solicitacao))
     }
 
     @GetMapping
-    fun listar(@AuthenticationPrincipal jwt: Jwt): List<SolicitacaoResponse> =
+    suspend fun listar(@AuthenticationPrincipal jwt: Jwt): List<SolicitacaoResponse> =
         useCase.listar(jwt.clienteId()).map { SolicitacaoResponse.de(it) }
 
     @GetMapping("/{id}")
-    fun buscar(@AuthenticationPrincipal jwt: Jwt, @PathVariable id: String): ResponseEntity<SolicitacaoResponse> {
+    suspend fun buscar(@AuthenticationPrincipal jwt: Jwt, @PathVariable id: String): ResponseEntity<SolicitacaoResponse> {
         val solicitacao = useCase.buscar(jwt.clienteId(), id) ?: return ResponseEntity.notFound().build()
         return ResponseEntity.ok(SolicitacaoResponse.de(solicitacao))
     }

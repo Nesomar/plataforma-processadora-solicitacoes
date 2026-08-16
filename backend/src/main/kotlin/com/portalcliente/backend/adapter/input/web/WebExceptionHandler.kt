@@ -5,11 +5,11 @@ import com.portalcliente.backend.domain.EmailJaCadastradoException
 import com.portalcliente.backend.domain.FormatoAnexoInvalidoException
 import com.portalcliente.backend.domain.OrdemEtapaInvalidaException
 import com.portalcliente.backend.domain.PerfilIncompletoException
+import org.springframework.core.io.buffer.DataBufferLimitException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
-import org.springframework.web.multipart.MaxUploadSizeExceededException
 
 @RestControllerAdvice
 class WebExceptionHandler {
@@ -30,8 +30,9 @@ class WebExceptionHandler {
     fun handleFormatoAnexoInvalido(ex: FormatoAnexoInvalidoException): ResponseEntity<Map<String, String?>> =
         ResponseEntity.status(HttpStatus.BAD_REQUEST).body(mapOf("error" to ex.message))
 
-    @ExceptionHandler(MaxUploadSizeExceededException::class)
-    fun handleMaxUploadSizeExceeded(): ResponseEntity<Map<String, String?>> =
+    // WebFlux: parte do multipart excede spring.webflux.multipart.max-in-memory-size/max-disk-usage-per-part.
+    @ExceptionHandler(DataBufferLimitException::class)
+    fun handleDataBufferLimitExceeded(): ResponseEntity<Map<String, String?>> =
         ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(mapOf("error" to "Arquivo excede o tamanho máximo permitido"))
 
     // Perfil incompleto — cliente precisa concluir o onboarding antes (specs/service-requests/spec.md)

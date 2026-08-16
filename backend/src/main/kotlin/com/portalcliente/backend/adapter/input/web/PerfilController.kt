@@ -47,7 +47,7 @@ data class GateResponse(val completo: Boolean, val proximaEtapa: String?)
 class PerfilController(private val useCase: PerfilUseCase) {
 
     @PatchMapping("/dados-pessoais")
-    fun salvarDadosPessoais(
+    suspend fun salvarDadosPessoais(
         @AuthenticationPrincipal jwt: Jwt,
         @Valid @RequestBody body: DadosPessoaisRequest,
     ): ResponseEntity<Void> {
@@ -59,7 +59,7 @@ class PerfilController(private val useCase: PerfilUseCase) {
     }
 
     @PatchMapping("/endereco")
-    fun salvarEndereco(
+    suspend fun salvarEndereco(
         @AuthenticationPrincipal jwt: Jwt,
         @Valid @RequestBody body: EnderecoRequest,
     ): ResponseEntity<Void> {
@@ -71,7 +71,7 @@ class PerfilController(private val useCase: PerfilUseCase) {
     }
 
     @PatchMapping("/renda")
-    fun salvarRenda(
+    suspend fun salvarRenda(
         @AuthenticationPrincipal jwt: Jwt,
         @Valid @RequestBody body: RendaRequest,
     ): ResponseEntity<Void> {
@@ -80,7 +80,7 @@ class PerfilController(private val useCase: PerfilUseCase) {
     }
 
     @GetMapping("/gate")
-    fun consultarGate(@AuthenticationPrincipal jwt: Jwt): GateResponse {
+    suspend fun consultarGate(@AuthenticationPrincipal jwt: Jwt): GateResponse {
         val resultado = useCase.consultarGate(jwt.clienteId())
         return GateResponse(completo = resultado.completo, proximaEtapa = resultado.proximaEtapa?.name)
     }

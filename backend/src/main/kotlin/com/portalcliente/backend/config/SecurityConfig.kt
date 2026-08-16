@@ -5,25 +5,24 @@ import com.nimbusds.jose.proc.SecurityContext
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.security.config.annotation.web.builders.HttpSecurity
-import org.springframework.security.config.annotation.web.invoke
-import org.springframework.security.config.http.SessionCreationPolicy
+import org.springframework.security.config.web.server.ServerHttpSecurity
+import org.springframework.security.config.web.server.invoke
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
-import org.springframework.security.oauth2.jwt.JwtDecoder
 import org.springframework.security.oauth2.jwt.JwtEncoder
-import org.springframework.security.oauth2.jwt.NimbusJwtDecoder
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder
-import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.oauth2.jwt.NimbusReactiveJwtDecoder
+import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder
+import org.springframework.security.web.server.SecurityWebFilterChain
 import org.springframework.web.cors.CorsConfiguration
-import org.springframework.web.cors.CorsConfigurationSource
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource
+import org.springframework.web.cors.reactive.CorsConfigurationSource
+import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource
 import javax.crypto.spec.SecretKeySpec
 
 /**
  * Backend emite e valida seu próprio JWT (HS256, segredo simétrico) — sem Cognito nem
  * qualquer validador upstream (openspec/specs/client-auth/spec.md). Emissor e validador são o
- * mesmo processo, então um `JwtEncoder`/`JwtDecoder` com chave compartilhada substitui o
+ * mesmo processo, então um `JwtEncoder`/`ReactiveJwtDecoder` com chave compartilhada substitui o
  * `issuer-uri`/`jwk-set-uri` que antes apontavam pro Cognito.
  *
  * Em produção o CORS é resolvido pelo API Gateway (mesma origem via CloudFront); esse bean só
@@ -37,21 +36,17 @@ class SecurityConfig(
 ) {
 
     @Bean
-    fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
-        http {
-            csrf { disable() }
-            cors { }
-            sessionManagement { sessionCreationPolicy = SessionCreationPolicy.STATELESS }
-            authorizeHttpRequests {
-                authorize("/actuator/health", permitAll)
-                authorize("/api/auth/**", permitAll)
-                authorize(anyRequest, authenticated)
-            }
-            oauth2ResourceServer {
-                jwt { }
-            }
+    fun securityWebFilterChain(http: ServerHttpSecurity): SecurityWebFilterChain = http {
+        csrf { disable() }
+        cors { }
+        authorizeExchange {
+            authorize("/actuator/health", permitAll)
+            authorize("/api/auth/**", permitAll)
+            authorize(anyExchange, authenticated)
         }
-        return http.build()
+        oauth2ResourceServer {
+            jwt { }
+        }
     }
 
     @Bean
@@ -63,7 +58,7 @@ class SecurityConfig(
     fun jwtEncoder(): JwtEncoder = NimbusJwtEncoder(ImmutableSecret<SecurityContext>(secretKey()))
 
     @Bean
-    fun jwtDecoder(): JwtDecoder = NimbusJwtDecoder.withSecretKey(secretKey()).build()
+    fun reactiveJwtDecoder(): ReactiveJwtDecoder = NimbusReactiveJwtDecoder.withSecretKey(secretKey()).build()
 
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {

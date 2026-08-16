@@ -16,25 +16,25 @@ import org.springframework.stereotype.Service
 @Service
 class PerfilService(private val repository: PerfilRepository) : PerfilUseCase {
 
-    override fun salvarDadosPessoais(clienteId: String, dados: DadosPessoais) {
+    override suspend fun salvarDadosPessoais(clienteId: String, dados: DadosPessoais) {
         val perfil = buscarOuNovo(clienteId).comDadosPessoais(dados)
         repository.salvar(perfil)
     }
 
-    override fun salvarEndereco(clienteId: String, endereco: Endereco) {
+    override suspend fun salvarEndereco(clienteId: String, endereco: Endereco) {
         val perfil = buscarOuNovo(clienteId).comEndereco(endereco)
         repository.salvar(perfil)
     }
 
-    override fun salvarRenda(clienteId: String, renda: Renda) {
+    override suspend fun salvarRenda(clienteId: String, renda: Renda) {
         val perfil = buscarOuNovo(clienteId).comRenda(renda)
         repository.salvar(perfil)
     }
 
-    override fun consultarGate(clienteId: String): GateResultado {
+    override suspend fun consultarGate(clienteId: String): GateResultado {
         val perfil = repository.buscar(clienteId) ?: Perfil.novo(clienteId)
         return GateResultado(completo = perfil.completo(), proximaEtapa = perfil.proximaEtapaPendente())
     }
 
-    private fun buscarOuNovo(clienteId: String): Perfil = repository.buscar(clienteId) ?: Perfil.novo(clienteId)
+    private suspend fun buscarOuNovo(clienteId: String): Perfil = repository.buscar(clienteId) ?: Perfil.novo(clienteId)
 }
