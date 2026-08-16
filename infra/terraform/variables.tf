@@ -39,9 +39,3 @@ variable "local_dev_origins" {
   type        = list(string)
   default     = []
 }
-
-variable "local_dev_endpoint" {
-  description = "Endpoint do ministack (ex: http://ministack:4566) usado para apontar o issuer_url do Cognito pro emulador local em vez do DNS real da AWS. Vazio por padrão para não vazar pra prod/staging."
-  type        = string
-  default     = ""
-}

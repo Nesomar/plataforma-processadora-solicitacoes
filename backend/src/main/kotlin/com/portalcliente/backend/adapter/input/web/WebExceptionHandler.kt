@@ -1,5 +1,7 @@
 package com.portalcliente.backend.adapter.input.web
 
+import com.portalcliente.backend.domain.CredenciaisInvalidasException
+import com.portalcliente.backend.domain.EmailJaCadastradoException
 import com.portalcliente.backend.domain.FormatoAnexoInvalidoException
 import com.portalcliente.backend.domain.OrdemEtapaInvalidaException
 import com.portalcliente.backend.domain.PerfilIncompletoException
@@ -36,4 +38,14 @@ class WebExceptionHandler {
     @ExceptionHandler(PerfilIncompletoException::class)
     fun handlePerfilIncompleto(ex: PerfilIncompletoException): ResponseEntity<Map<String, String?>> =
         ResponseEntity.status(HttpStatus.CONFLICT).body(mapOf("error" to ex.message))
+
+    // Cadastro com email já usado por outra credencial (specs/client-auth/spec.md)
+    @ExceptionHandler(EmailJaCadastradoException::class)
+    fun handleEmailJaCadastrado(ex: EmailJaCadastradoException): ResponseEntity<Map<String, String?>> =
+        ResponseEntity.status(HttpStatus.CONFLICT).body(mapOf("error" to ex.message))
+
+    // Login com email ou senha incorretos (specs/client-auth/spec.md)
+    @ExceptionHandler(CredenciaisInvalidasException::class)
+    fun handleCredenciaisInvalidas(ex: CredenciaisInvalidasException): ResponseEntity<Map<String, String?>> =
+        ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(mapOf("error" to ex.message))
 }

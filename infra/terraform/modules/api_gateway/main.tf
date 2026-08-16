@@ -46,26 +46,13 @@ resource "aws_apigatewayv2_integration" "ecs" {
   connection_id      = aws_apigatewayv2_vpc_link.this.id
 }
 
-resource "aws_apigatewayv2_authorizer" "cognito" {
-  api_id           = aws_apigatewayv2_api.this.id
-  name             = "${local.name}-cognito"
-  authorizer_type  = "JWT"
-  identity_sources = ["$request.header.Authorization"]
-
-  jwt_configuration {
-    audience = [var.cognito_user_pool_client_id]
-    issuer   = var.cognito_issuer_url
-  }
-}
-
-# Rota catch-all; API Gateway valida o JWT via Cognito Authorizer antes de rotear pro ECS
-# (backend revalida de novo — ver specs/client-auth/spec.md)
+# Rota catch-all; sem authorizer no gateway — o backend (ECS) é o único validador do JWT
+# próprio, emitido e verificado pelo mesmo processo (ver specs/client-auth/spec.md).
 resource "aws_apigatewayv2_route" "proxy" {
   api_id             = aws_apigatewayv2_api.this.id
   route_key          = "ANY /{proxy+}"
   target             = "integrations/${aws_apigatewayv2_integration.ecs.id}"
-  authorization_type = "JWT"
-  authorizer_id      = aws_apigatewayv2_authorizer.cognito.id
+  authorization_type = "NONE"
 }
 
 resource "aws_apigatewayv2_stage" "default" {

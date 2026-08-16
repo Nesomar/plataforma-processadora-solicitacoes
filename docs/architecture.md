@@ -6,27 +6,25 @@
 flowchart TB
     Cliente["Cliente (browser)"]
     CF["CloudFront + S3 (SPA React)"]
-    APIGW["API Gateway HTTP API<br/>Cognito JWT Authorizer"]
+    APIGW["API Gateway HTTP API<br/>sem authorizer"]
     NLB["NLB (interno)"]
-    ECS["ECS Fargate<br/>Spring Boot (revalida JWT)"]
-    Cognito["Cognito User Pool"]
+    ECS["ECS Fargate<br/>Spring Boot (emite e valida JWT)"]
     Dynamo[("DynamoDB<br/>single-table")]
     S3a[("S3 — anexos")]
     SQS[("SQS — anexos")]
 
     Cliente -->|HTTPS| CF
-    Cliente -->|"Bearer &lt;id_token&gt;"| APIGW
+    Cliente -->|"Bearer &lt;jwt&gt;"| APIGW
     APIGW -->|VPC Link| NLB --> ECS
-    APIGW -.->|valida assinatura/issuer| Cognito
-    ECS -.->|revalida assinatura| Cognito
     ECS --> Dynamo
     ECS --> S3a
     ECS --> SQS
 ```
 
-API Gateway valida o JWT via Cognito Authorizer antes de rotear; o ECS revalida a assinatura de
-novo (defesa em profundidade — não confia cegamente no gateway). O frontend manda o **ID token**
-como Bearer, não o access token: só o ID token carrega a claim `aud` que o Authorizer confere.
+O backend (ECS) emite e valida o próprio JWT (HS256, segredo simétrico via `JWT_SIGNING_SECRET`) —
+sem Cognito nem qualquer validador upstream no API Gateway (ver
+`docs/decisions/0007-jwt-proprio-sem-cognito.md`). `POST /api/auth/signup` e `POST /api/auth/login`
+são os únicos endpoints públicos (`permitAll`); todo o resto exige o JWT no header `Authorization`.
 
 ## Padrão hexagonal (repete nas 3 capabilities: Perfil, Anexo, Solicitação)
 

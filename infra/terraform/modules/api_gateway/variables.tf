@@ -19,14 +19,6 @@ variable "nlb_listener_arn" {
   type        = string
 }
 
-variable "cognito_issuer_url" {
-  type = string
-}
-
-variable "cognito_user_pool_client_id" {
-  type = string
-}
-
 variable "allowed_origins" {
   description = "Origens do frontend autorizadas a chamar a API (CORS)"
   type        = list(string)

@@ -6,7 +6,7 @@ docker compose up --build
 
 Sobe tudo automatizado, nessa ordem (via `depends_on` + healthcheck/`service_completed_successfully`):
 
-1. **ministack** — [emulador AWS](https://github.com/ministackorg/ministack) na porta `4566` (DynamoDB, S3, SQS, Cognito, API Gateway).
+1. **ministack** — [emulador AWS](https://github.com/ministackorg/ministack) na porta `4566` (DynamoDB, S3, SQS, API Gateway).
 2. **terraform-init** — container one-shot (`infra/terraform/docker-init-apply.sh`) que gera `infra/terraform/override.tf`
    (provider com endpoints apontados pro ministack — não versionado, seção seguinte explica o conteúdo), roda
    `terraform init` + `apply` só dos módulos suportados localmente, e grava os outputs em
@@ -15,7 +15,7 @@ Sobe tudo automatizado, nessa ordem (via `depends_on` + healthcheck/`service_com
    gerados no passo anterior via `env_file` no `docker-compose.yml`.
 
 Como `network`/`api_gateway`/`ecs` dependem de NLB + VPC Link (gap conhecido, seção abaixo), o `terraform apply` do
-`terraform-init` usa `-target` pra só subir `cognito`/`dynamodb`/`s3`/`sqs` — os módulos sem suporte confirmado no
+`terraform-init` usa `-target` pra só subir `dynamodb`/`s3`/`sqs` — os módulos sem suporte confirmado no
 ministack ficam de fora.
 
 O `override.tf` gerado (efêmero, recriado a cada `docker compose up`):
@@ -31,8 +31,7 @@ provider "aws" {
 
   endpoints {
     apigatewayv2 = "http://ministack:4566"   # nome do serviço docker-compose, não localhost —
-    cognitoidp   = "http://ministack:4566"   # terraform-init roda em container na mesma rede
-    dynamodb     = "http://ministack:4566"
+    dynamodb     = "http://ministack:4566"   # terraform-init roda em container na mesma rede
     ecs          = "http://ministack:4566"
     iam          = "http://ministack:4566"
     s3           = "http://ministack:4566"
@@ -45,18 +44,15 @@ provider "aws" {
 }
 ```
 
-A variável `local_dev_endpoint` (root + módulo `cognito`) recebe o mesmo `http://ministack:4566` no apply — sem ela,
-`issuer_url` sempre aponta pro DNS real da AWS (`cognito-idp.{region}.amazonaws.com`), e o `JwtDecoder` do Spring
-falha ao buscar o discovery doc contra um pool que só existe no ministack. Com a variável setada, `issuer_url` vira
-`http://ministack:4566/{poolId}` — resolvível de dentro do container do backend, que está na mesma rede compose.
+O backend emite e valida seu próprio JWT (HS256, `JWT_SIGNING_SECRET`) — sem serviço externo
+envolvido, nem emulado nem real. `docker-init-apply.sh` grava um segredo fixo pra dev local (mesmo
+valor do default em `application.yml`), então login funciona sem nenhum ajuste manual entre
+rebuilds — era exatamente esse tipo de sincronização manual (IDs/segredos recriados a cada
+`docker compose up --build`) que existia com o Cognito e motivou a remoção (ver
+`openspec/changes/archive/*/remover-cognito-auth-propria/design.md`).
 
-O SDK Cognito do frontend (`amazon-cognito-identity-js`, roda no browser do host, não em container) usa um endpoint
-diferente pro mesmo ministack: `VITE_COGNITO_ENDPOINT=http://localhost:4566` (porta publicada), não `http://ministack:4566`
-(só resolvível dentro da rede docker).
-
-Sem `AWS_SQS_ATTACHMENTS_QUEUE_URL` setada, todo upload de anexo falha no passo de publicar na fila (queueUrl vazio).
-Sem `COGNITO_ISSUER_URI` setada (vazia, o default), o Spring nem cria o bean `JwtDecoder` e o
-`bootRun` falha na subida com `SecurityConfig` reclamando de bean ausente. O `docker-init-apply.sh` cobre os dois.
+Sem `AWS_SQS_ATTACHMENTS_QUEUE_URL` setada, todo upload de anexo falha no passo de publicar na fila
+(queueUrl vazio). O `docker-init-apply.sh` cobre isso.
 
 ## Rodando backend/frontend fora de container (loop de dev mais rápido)
 
@@ -85,4 +81,4 @@ Ou, mais simples: rode o backend também via `docker compose up backend` e itere
 - **ELBv2**: suporte documentado é focado em ALB (roteamento por `path-pattern`/`host-header`/regras L7 para Lambda). Não há confirmação de que o tipo `network` (NLB) tenha paridade real de data-plane.
 - **VPC Link** (`aws_apigatewayv2_vpc_link`): não aparece em nenhum lugar da documentação/lista de serviços suportados.
 
-**Conclusão do spike:** o caminho API Gateway → VPC Link → NLB → ECS não tem suporte confirmado no ministack. Conforme já previsto no `design.md` (Risks/Trade-offs), esse trecho específico só é validado contra AWS real (fase 6 — deploy). Localmente, os módulos `network`/`api_gateway`/`ecs` podem ser aplicados para validar a parte que roda em cada serviço individualmente (ex: ECS via `RunTask` real com Docker socket, DynamoDB, S3, SQS, Cognito), mas o roteamento ponta-a-ponta via API Gateway não é confiável localmente até esse gap ser fechado (upstream) ou reavaliado.
+**Conclusão do spike:** o caminho API Gateway → VPC Link → NLB → ECS não tem suporte confirmado no ministack. Conforme já previsto no `design.md` (Risks/Trade-offs), esse trecho específico só é validado contra AWS real (fase 6 — deploy). Localmente, os módulos `network`/`api_gateway`/`ecs` podem ser aplicados para validar a parte que roda em cada serviço individualmente (ex: ECS via `RunTask` real com Docker socket, DynamoDB, S3, SQS), mas o roteamento ponta-a-ponta via API Gateway não é confiável localmente até esse gap ser fechado (upstream) ou reavaliado.
