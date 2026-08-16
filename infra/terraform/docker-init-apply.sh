@@ -28,15 +28,17 @@ EOF
 
 terraform init -input=false
 terraform apply -auto-approve -input=false \
-  -target=module.cognito -target=module.dynamodb -target=module.s3.aws_s3_bucket.attachments -target=module.sqs \
-  -var 'local_dev_origins=["http://localhost:5173"]' \
-  -var 'local_dev_endpoint=http://ministack:4566'
+  -target=module.dynamodb -target=module.s3.aws_s3_bucket.attachments -target=module.sqs \
+  -var 'local_dev_origins=["http://localhost:5173"]'
 
 mkdir -p env
 
+# Segredo fixo pra dev local (não é segredo de produção real — simplicidade > segurança nesse
+# ambiente descartável; ver design.md decisão 1). Mesmo valor do default em application.yml,
+# só explícito aqui pra deixar claro que backend e frontend sobem com auth funcionando sem
+# nenhum ajuste manual, idempotente entre rebuilds (era o problema original com o Cognito).
 cat > env/backend.env <<EOF
-COGNITO_ISSUER_URI=$(terraform output -raw cognito_issuer_url)
-COGNITO_JWK_SET_URI=$(terraform output -raw cognito_jwk_set_uri)
+JWT_SIGNING_SECRET=dev-local-insecure-jwt-signing-secret-troque-em-producao
 AWS_REGION=sa-east-1
 AWS_ENDPOINT_OVERRIDE=http://ministack:4566
 AWS_ACCESS_KEY_ID=test
@@ -49,9 +51,6 @@ EOF
 
 cat > env/frontend.env <<EOF
 VITE_API_BASE_URL=http://localhost:8080
-VITE_COGNITO_USER_POOL_ID=$(terraform output -raw cognito_user_pool_id)
-VITE_COGNITO_CLIENT_ID=$(terraform output -raw cognito_user_pool_client_id)
-VITE_COGNITO_ENDPOINT=http://localhost:4566
 EOF
 
 echo "env/backend.env e env/frontend.env gerados."

@@ -8,14 +8,6 @@ module "network" {
   container_port     = var.container_port
 }
 
-module "cognito" {
-  source = "./modules/cognito"
-
-  project_name       = var.project_name
-  environment        = var.environment
-  local_dev_endpoint = var.local_dev_endpoint
-}
-
 module "dynamodb" {
   source = "./modules/dynamodb"
 
@@ -45,8 +37,6 @@ module "api_gateway" {
   vpc_id                      = module.network.vpc_id
   private_subnet_ids          = module.network.private_subnet_ids
   nlb_listener_arn            = module.network.nlb_listener_arn
-  cognito_issuer_url          = module.cognito.issuer_url
-  cognito_user_pool_client_id = module.cognito.user_pool_client_id
   allowed_origins             = concat(["https://${module.s3.cloudfront_domain_name}"], var.local_dev_origins)
 }
 

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { login } from "../auth/cognito";
+import { login } from "../auth/authApi";
 import { tokenStore } from "../auth/tokenStore";
 import { perfilApi } from "../api/perfilApi";
 import { EntradaShell } from "./EntradaShell";
@@ -17,15 +17,15 @@ export function LoginPage() {
     event.preventDefault();
     setError(null);
     setLoading(true);
-    let idToken: string;
+    let token: string;
     try {
-      idToken = (await login(email, password)).idToken;
+      token = (await login(email, password)).token;
     } catch {
       setError("Email ou senha inválidos.");
       setLoading(false);
       return;
     }
-    tokenStore.set(idToken);
+    tokenStore.set(token);
     try {
       const gate = await perfilApi.consultarGate();
       navigate(gate.completo ? "/" : "/onboarding");

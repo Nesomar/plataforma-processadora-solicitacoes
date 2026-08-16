@@ -1,6 +1,8 @@
 # 5. Cognito Authorizer no API Gateway + revalidação no backend
 
-**Status:** aceito
+**Status:** superseded por [`0007-jwt-proprio-sem-cognito.md`](0007-jwt-proprio-sem-cognito.md) —
+Cognito removido, backend passou a ser o único validador (sem authorizer no gateway). Registro
+histórico mantido como estava no momento da decisão original.
 
 ## Contexto
 

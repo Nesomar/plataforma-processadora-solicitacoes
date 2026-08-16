@@ -2,9 +2,12 @@ package com.portalcliente.backend.adapter.output.dynamodb
 
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable
+import software.amazon.awssdk.enhanced.dynamodb.Expression
 import software.amazon.awssdk.enhanced.dynamodb.Key
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema
+import software.amazon.awssdk.enhanced.dynamodb.model.PutItemEnhancedRequest
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional
+import software.amazon.awssdk.services.dynamodb.model.ConditionalCheckFailedException
 
 /**
  * Base pro acesso à tabela única (PK "CLIENTE#{id}", SK varia por tipo de item — ver design.md).
@@ -25,6 +28,20 @@ abstract class DynamoDbRepository<T : Any>(
         table.putItem(item)
         return item
     }
+
+    /** PutItem condicional (`attribute_not_exists(PK)`) — evita race condition de check-then-write. */
+    fun saveIfNotExists(item: T): Boolean =
+        try {
+            table.putItem(
+                PutItemEnhancedRequest.builder(item.javaClass)
+                    .item(item)
+                    .conditionExpression(Expression.builder().expression("attribute_not_exists(PK)").build())
+                    .build(),
+            )
+            true
+        } catch (e: ConditionalCheckFailedException) {
+            false
+        }
 
     fun queryByPartition(pk: String): List<T> =
         table.query(QueryConditional.keyEqualTo(Key.builder().partitionValue(pk).build()))

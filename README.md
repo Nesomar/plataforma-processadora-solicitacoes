@@ -10,9 +10,9 @@ etapas retomáveis, e cria/acompanha suas solicitações — reaproveitando os d
 | Frontend | React 19 + TypeScript + Vite, React Router, Axios |
 | Backend | Kotlin 2.3 + Spring Boot 4.1 (arquitetura hexagonal), Gradle |
 | Dados | DynamoDB (single-table) |
-| Auth | Amazon Cognito (User Pool), JWT validado no API Gateway e revalidado no backend |
+| Auth | JWT próprio (backend emite e valida, HS256 — sem Cognito) |
 | Anexos | Upload via backend → S3 → evento SQS |
-| Infra | Terraform (rede, ECS Fargate, API Gateway HTTP API, Cognito, DynamoDB, S3, SQS) |
+| Infra | Terraform (rede, ECS Fargate, API Gateway HTTP API, DynamoDB, S3, SQS) |
 | Dev local | docker-compose + [ministack](https://github.com/ministackorg/ministack) (emulador AWS) |
 
 Arquitetura completa e decisões de design: [`docs/architecture.md`](docs/architecture.md).

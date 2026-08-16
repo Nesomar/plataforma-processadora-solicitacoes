@@ -5,7 +5,7 @@ Contexto pra sessões futuras do Claude Code neste repo. Visão de produto e arq
 
 ## O que é
 
-Portal de cliente: login (Cognito) → onboarding por etapas retomável → criar/acompanhar
+Portal de cliente: login (JWT próprio, emitido/validado pelo backend) → onboarding por etapas retomável → criar/acompanhar
 solicitações reaproveitando o perfil. Backend Kotlin/Spring Boot hexagonal, frontend React,
 DynamoDB single-table, infra Terraform, dev local via docker-compose + ministack.
 
@@ -35,8 +35,9 @@ docker compose up -d ministack        # emulador AWS na porta 4566
   `adapter/input/web/XController` e `adapter/output/*` (Dynamo/S3/SQS).
 - **Pacotes `input`/`output`, nunca `in`/`out`** — são palavras reservadas em Kotlin, colidem se usadas
   como nome de pacote sem crase.
-- **ID token, não access token** no `Authorization: Bearer`. O Cognito Authorizer do API Gateway
-  confere a claim `aud`, que só existe no ID token (`frontend/src/auth/cognito.ts`).
+- **JWT próprio (HS256), sem Cognito.** Backend emite e valida o token (`SecurityConfig.kt`,
+  `AuthService`); `sub` = `clienteId`. Segredo em `JWT_SIGNING_SECRET` — mesmo processo emite e
+  valida, sem issuer/JWKS externo (ver `docs/decisions/0007-jwt-proprio-sem-cognito.md`).
 - **Token em memória no frontend**, não `localStorage` (`frontend/src/auth/tokenStore.ts`) — reduz
   superfície de XSS. Trade-off: perde sessão no F5 (sem refresh-token silencioso implementado).
 - **DynamoDB single-table**: `PK=CLIENTE#{id}`, `SK` varia (`PROFILE`, `SOLICITACAO#{id}`, `ANEXO#{id}`).
@@ -87,12 +88,12 @@ backend/src/main/kotlin/com/portalcliente/backend/
   config/                  Security, AwsClientConfig (DynamoDB/S3/SQS clients)
 
 frontend/src/
-  auth/                   cognito.ts (login), tokenStore.ts, ProtectedRoute.tsx
+  auth/                   authApi.ts (login/signup), tokenStore.ts, ProtectedRoute.tsx
   api/                    clients por capability (perfilApi, anexosApi, solicitacoesApi) + httpClient (interceptors)
   pages/                  LoginPage, DashboardPage, SolicitacaoDetailPage
   pages/onboarding/       wizard (um form por etapa + OnboardingWizard orquestrando via gate do backend)
 
-infra/terraform/modules/  network, cognito, dynamodb, s3, sqs, api_gateway, ecs
+infra/terraform/modules/  network, dynamodb, s3, sqs, api_gateway, ecs
 
 docs/
   architecture.md         diagramas + visão geral

@@ -32,9 +32,12 @@ services:
     build: ./backend
     ports:
       - "8080:8080"
-    env_file:
-      - path: ./infra/terraform/env/backend.env
-        required: false
+    # `env_file:` é resolvido quando o compose lê o arquivo, antes do terraform-init escrever
+    # infra/terraform/env/backend.env — no primeiro `up --build` (arquivo ainda não existe) o
+    # backend subiria sem nenhuma env var. O entrypoint lê o arquivo no start do container (via
+    # volume), não no parse do compose, então funciona mesmo na subida do zero.
+    volumes:
+      - ./infra/terraform/env:/env:ro
     depends_on:
       terraform-init:
         condition: service_completed_successfully

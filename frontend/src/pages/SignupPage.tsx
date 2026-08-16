@@ -1,30 +1,15 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
+import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
-import { signUp } from "../auth/cognito";
+import { signUp } from "../auth/authApi";
 import { EntradaShell } from "./EntradaShell";
 
-// Política do user pool (infra/terraform/modules/cognito): mínimo 8 caracteres,
-// maiúscula, minúscula e número obrigatórios, símbolo opcional.
 const SENHA_MIN_LENGTH = 8;
-const SENHA_REGEX = {
-  maiuscula: /[A-Z]/,
-  minuscula: /[a-z]/,
-  numero: /[0-9]/,
-};
 
 function validarSenha(senha: string): string | null {
   if (senha.length < SENHA_MIN_LENGTH) {
     return `A senha precisa ter no mínimo ${SENHA_MIN_LENGTH} caracteres.`;
-  }
-  if (!SENHA_REGEX.maiuscula.test(senha)) {
-    return "A senha precisa ter ao menos uma letra maiúscula.";
-  }
-  if (!SENHA_REGEX.minuscula.test(senha)) {
-    return "A senha precisa ter ao menos uma letra minúscula.";
-  }
-  if (!SENHA_REGEX.numero.test(senha)) {
-    return "A senha precisa ter ao menos um número.";
   }
   return null;
 }
@@ -48,18 +33,12 @@ export function SignupPage() {
 
     setLoading(true);
     try {
-      const resultado = await signUp(email, password);
-      // Pool com auto-verificação pode devolver a conta já confirmada — nesse caso não
-      // existe código pra digitar, então pula direto pro login (specs/client-registration).
-      navigate(resultado.userConfirmed ? "/login" : "/cadastro/confirmar", {
-        state: { email },
-      });
+      await signUp(email, password);
+      // Conta já fica ativa no signup — sem etapa de confirmação por email (specs/client-auth).
+      navigate("/login");
     } catch (err) {
-      const nome = err instanceof Error ? err.name : "";
-      if (nome === "UsernameExistsException") {
+      if (axios.isAxiosError(err) && err.response?.status === 409) {
         setError("Este email já está em uso. Tente entrar ou recuperar a senha.");
-      } else if (nome === "InvalidPasswordException") {
-        setError("Senha fora da política exigida. Tente uma senha mais forte.");
       } else {
         setError("Não foi possível criar sua conta. Tente novamente.");
       }
@@ -103,9 +82,7 @@ export function SignupPage() {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-          <span className="field__hint">
-            Mínimo 8 caracteres, com maiúscula, minúscula e número.
-          </span>
+          <span className="field__hint">Mínimo {SENHA_MIN_LENGTH} caracteres.</span>
         </div>
         {error && (
           <p className="alert" role="alert">
