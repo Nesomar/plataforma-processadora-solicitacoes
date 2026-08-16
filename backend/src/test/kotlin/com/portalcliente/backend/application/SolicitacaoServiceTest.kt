@@ -8,6 +8,7 @@ import com.portalcliente.backend.domain.Renda
 import com.portalcliente.backend.domain.Solicitacao
 import com.portalcliente.backend.port.output.PerfilRepository
 import com.portalcliente.backend.port.output.SolicitacaoRepository
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertThrows
@@ -24,8 +25,8 @@ private class StubPerfilRepository : PerfilRepository {
             renda = Renda(BigDecimal("5000.00"), "Engenheira"),
         )
     }
-    override fun buscar(clienteId: String): Perfil? = store[clienteId]
-    override fun salvar(perfil: Perfil): Perfil {
+    override suspend fun buscar(clienteId: String): Perfil? = store[clienteId]
+    override suspend fun salvar(perfil: Perfil): Perfil {
         store[perfil.clienteId] = perfil
         return perfil
     }
@@ -33,28 +34,29 @@ private class StubPerfilRepository : PerfilRepository {
 
 private class FakeSolicitacaoRepository : SolicitacaoRepository {
     private val store = mutableListOf<Solicitacao>()
-    override fun salvar(solicitacao: Solicitacao): Solicitacao {
+    override suspend fun salvar(solicitacao: Solicitacao): Solicitacao {
         store.add(solicitacao)
         return solicitacao
     }
-    override fun listarPorCliente(clienteId: String): List<Solicitacao> = store.filter { it.clienteId == clienteId }
-    override fun buscarPorId(clienteId: String, id: String): Solicitacao? =
+    override suspend fun listarPorCliente(clienteId: String): List<Solicitacao> = store.filter { it.clienteId == clienteId }
+    override suspend fun buscarPorId(clienteId: String, id: String): Solicitacao? =
         store.firstOrNull { it.clienteId == clienteId && it.id == id }
 }
 
 class SolicitacaoServiceTest {
 
     @Test
-    fun `bloqueia criacao com perfil incompleto`() {
+    fun `bloqueia criacao com perfil incompleto`() = runBlocking {
         val service = SolicitacaoService(StubPerfilRepository(), FakeSolicitacaoRepository())
 
         assertThrows(PerfilIncompletoException::class.java) {
-            service.criar("cliente-1")
+            runBlocking { service.criar("cliente-1") }
         }
+        Unit
     }
 
     @Test
-    fun `reaproveita dados do perfil ao criar`() {
+    fun `reaproveita dados do perfil ao criar`() = runBlocking {
         val perfilRepository = StubPerfilRepository().apply { preencher("cliente-1") }
         val service = SolicitacaoService(perfilRepository, FakeSolicitacaoRepository())
 
@@ -66,7 +68,7 @@ class SolicitacaoServiceTest {
     }
 
     @Test
-    fun `cliente nao acessa solicitacao de outro cliente`() {
+    fun `cliente nao acessa solicitacao de outro cliente`() = runBlocking {
         val perfilRepository = StubPerfilRepository().apply { preencher("cliente-1") }
         val solicitacaoRepository = FakeSolicitacaoRepository()
         val service = SolicitacaoService(perfilRepository, solicitacaoRepository)

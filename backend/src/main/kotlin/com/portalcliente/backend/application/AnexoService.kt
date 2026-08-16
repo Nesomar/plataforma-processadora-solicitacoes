@@ -20,7 +20,7 @@ class AnexoService(
 ) : AnexoUseCase {
 
     // Sem validação de conteúdo no MVP (specs/attachments/spec.md) — só checagem básica de formato.
-    override fun enviarAnexo(clienteId: String, nomeArquivo: String, contentType: String?, bytes: ByteArray): Anexo {
+    override suspend fun enviarAnexo(clienteId: String, nomeArquivo: String, contentType: String?, bytes: ByteArray): Anexo {
         if (contentType != CONTENT_TYPE_PDF) throw FormatoAnexoInvalidoException(contentType)
 
         val id = UUID.randomUUID().toString()

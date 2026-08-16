@@ -6,6 +6,8 @@ import com.portalcliente.backend.domain.EmailJaCadastradoException
 import com.portalcliente.backend.port.input.LoginUseCase
 import com.portalcliente.backend.port.input.SignupUseCase
 import com.portalcliente.backend.port.output.CredencialRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm
 import org.springframework.security.oauth2.jwt.JwsHeader
@@ -28,11 +30,11 @@ class AuthService(
 
     // PutItem condicional é a própria verificação de unicidade — sem leitura prévia,
     // evita race condition entre check-then-write (design.md, decisão 3).
-    override fun cadastrar(email: String, senha: String): String {
+    override suspend fun cadastrar(email: String, senha: String): String {
         val clienteId = UUID.randomUUID().toString()
         val credencial = Credencial(
             email = email.trim().lowercase(),
-            passwordHash = passwordEncoder.encode(senha)!!,
+            passwordHash = withContext(Dispatchers.IO) { passwordEncoder.encode(senha)!! },
             clienteId = clienteId,
             criadoEm = Instant.now(),
         )
@@ -40,9 +42,9 @@ class AuthService(
         return clienteId
     }
 
-    override fun autenticar(email: String, senha: String): String {
-        val credencial = repository.buscarPorEmail(email.trim().lowercase())
-            ?.takeIf { passwordEncoder.matches(senha, it.passwordHash) }
+    override suspend fun autenticar(email: String, senha: String): String {
+        val encontrada = repository.buscarPorEmail(email.trim().lowercase())
+        val credencial = encontrada?.takeIf { withContext(Dispatchers.IO) { passwordEncoder.matches(senha, it.passwordHash) } }
             ?: throw CredenciaisInvalidasException()
         return emitirToken(credencial.clienteId)
     }

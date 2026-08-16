@@ -17,7 +17,7 @@ class SolicitacaoService(
 ) : SolicitacaoUseCase {
 
     // Bloqueia com perfil incompleto e reaproveita os dados já cadastrados (specs/service-requests/spec.md)
-    override fun criar(clienteId: String): Solicitacao {
+    override suspend fun criar(clienteId: String): Solicitacao {
         val perfil = perfilRepository.buscar(clienteId)
         if (perfil == null || !perfil.completo()) throw PerfilIncompletoException()
 
@@ -33,7 +33,7 @@ class SolicitacaoService(
         return solicitacaoRepository.salvar(solicitacao)
     }
 
-    override fun listar(clienteId: String): List<Solicitacao> = solicitacaoRepository.listarPorCliente(clienteId)
+    override suspend fun listar(clienteId: String): List<Solicitacao> = solicitacaoRepository.listarPorCliente(clienteId)
 
-    override fun buscar(clienteId: String, id: String): Solicitacao? = solicitacaoRepository.buscarPorId(clienteId, id)
+    override suspend fun buscar(clienteId: String, id: String): Solicitacao? = solicitacaoRepository.buscarPorId(clienteId, id)
 }

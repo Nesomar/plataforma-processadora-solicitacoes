@@ -8,8 +8,8 @@ import com.portalcliente.backend.domain.Renda
 data class GateResultado(val completo: Boolean, val proximaEtapa: OnboardingStep?)
 
 interface PerfilUseCase {
-    fun salvarDadosPessoais(clienteId: String, dados: DadosPessoais)
-    fun salvarEndereco(clienteId: String, endereco: Endereco)
-    fun salvarRenda(clienteId: String, renda: Renda)
-    fun consultarGate(clienteId: String): GateResultado
+    suspend fun salvarDadosPessoais(clienteId: String, dados: DadosPessoais)
+    suspend fun salvarEndereco(clienteId: String, endereco: Endereco)
+    suspend fun salvarRenda(clienteId: String, renda: Renda)
+    suspend fun consultarGate(clienteId: String): GateResultado
 }

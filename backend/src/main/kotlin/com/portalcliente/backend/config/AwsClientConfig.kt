@@ -3,11 +3,11 @@ package com.portalcliente.backend.config
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedAsyncClient
 import software.amazon.awssdk.regions.Region
-import software.amazon.awssdk.services.dynamodb.DynamoDbClient
-import software.amazon.awssdk.services.s3.S3Client
-import software.amazon.awssdk.services.sqs.SqsClient
+import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient
+import software.amazon.awssdk.services.s3.S3AsyncClient
+import software.amazon.awssdk.services.sqs.SqsAsyncClient
 import java.net.URI
 
 /**
@@ -22,26 +22,28 @@ class AwsClientConfig(
 ) {
 
     @Bean
-    fun dynamoDbClient(): DynamoDbClient {
-        val builder = DynamoDbClient.builder().region(Region.of(region))
+    fun dynamoDbAsyncClient(): DynamoDbAsyncClient {
+        val builder = DynamoDbAsyncClient.builder().region(Region.of(region))
         if (endpointOverride.isNotBlank()) builder.endpointOverride(URI.create(endpointOverride))
         return builder.build()
     }
 
     @Bean
-    fun dynamoDbEnhancedClient(dynamoDbClient: DynamoDbClient): DynamoDbEnhancedClient =
-        DynamoDbEnhancedClient.builder().dynamoDbClient(dynamoDbClient).build()
+    fun dynamoDbEnhancedAsyncClient(dynamoDbAsyncClient: DynamoDbAsyncClient): DynamoDbEnhancedAsyncClient =
+        DynamoDbEnhancedAsyncClient.builder().dynamoDbClient(dynamoDbAsyncClient).build()
 
     @Bean
-    fun s3Client(): S3Client {
-        val builder = S3Client.builder().region(Region.of(region))
-        if (endpointOverride.isNotBlank()) builder.endpointOverride(URI.create(endpointOverride))
+    fun s3AsyncClient(): S3AsyncClient {
+        val builder = S3AsyncClient.builder().region(Region.of(region))
+        // Path-style (bucket como parte do path, não subdomínio) — obrigatório contra o
+        // ministack, que não resolve `<bucket>.<host>` como virtual-hosted style faria.
+        if (endpointOverride.isNotBlank()) builder.endpointOverride(URI.create(endpointOverride)).forcePathStyle(true)
         return builder.build()
     }
 
     @Bean
-    fun sqsClient(): SqsClient {
-        val builder = SqsClient.builder().region(Region.of(region))
+    fun sqsAsyncClient(): SqsAsyncClient {
+        val builder = SqsAsyncClient.builder().region(Region.of(region))
         if (endpointOverride.isNotBlank()) builder.endpointOverride(URI.create(endpointOverride))
         return builder.build()
     }

@@ -33,12 +33,12 @@ class AuthController(
 ) {
 
     @PostMapping("/signup")
-    fun signup(@Valid @RequestBody request: SignupRequest): ResponseEntity<SignupResponse> {
+    suspend fun signup(@Valid @RequestBody request: SignupRequest): ResponseEntity<SignupResponse> {
         val clienteId = signupUseCase.cadastrar(request.email, request.password)
         return ResponseEntity.status(HttpStatus.CREATED).body(SignupResponse(clienteId))
     }
 
     @PostMapping("/login")
-    fun login(@Valid @RequestBody request: LoginRequest): LoginResponse =
+    suspend fun login(@Valid @RequestBody request: LoginRequest): LoginResponse =
         LoginResponse(loginUseCase.autenticar(request.email, request.password))
 }

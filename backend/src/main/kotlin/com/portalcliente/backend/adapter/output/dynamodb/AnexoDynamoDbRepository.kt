@@ -4,7 +4,7 @@ import com.portalcliente.backend.domain.Anexo
 import com.portalcliente.backend.port.output.AnexoRepository
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Repository
-import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedAsyncClient
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema
 
 private fun partitionKey(clienteId: String) = "CLIENTE#$clienteId"
@@ -12,12 +12,12 @@ private fun sortKey(anexoId: String) = "ANEXO#$anexoId"
 
 @Repository
 class AnexoDynamoDbRepository(
-    enhancedClient: DynamoDbEnhancedClient,
+    enhancedClient: DynamoDbEnhancedAsyncClient,
     @Value("\${aws.dynamodb.table-name}") tableName: String,
 ) : DynamoDbRepository<AnexoItem>(enhancedClient, tableName, TableSchema.fromBean(AnexoItem::class.java)),
     AnexoRepository {
 
-    override fun salvar(anexo: Anexo): Anexo {
+    override suspend fun salvar(anexo: Anexo): Anexo {
         val item = AnexoItem()
         item.pk = partitionKey(anexo.clienteId)
         item.sk = sortKey(anexo.id)
