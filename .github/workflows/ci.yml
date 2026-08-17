@@ -3,7 +3,11 @@ name: CI
 on:
   pull_request:
   push:
-    branches: [main]
+    branches-ignore: [main]
+
+permissions:
+  contents: read
+  pull-requests: write
 
 jobs:
   backend:
@@ -35,3 +39,19 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: npm test
+
+  open-pr:
+    needs: [backend, frontend]
+    if: github.event_name == 'push' && github.ref != 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Abrir PR pra main se ainda não existir
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if gh pr list --base main --head "${{ github.ref_name }}" --state open --json number --jq 'length' | grep -q '^0$'; then
+            gh pr create --base main --head "${{ github.ref_name }}" --fill
+          else
+            echo "PR já existe pra ${{ github.ref_name }} -> main"
+          fi
