@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import type { DadosPessoais } from "../../api/perfilApi";
+import { cpfValido, mascaraCpf, mascaraTelefone, telefoneValido } from "../../utils/validacao";
 
 export function DadosPessoaisForm({
   onSubmit,
@@ -13,9 +14,15 @@ export function DadosPessoaisForm({
     dataNascimento: "",
     telefone: "",
   });
+  const [erros, setErros] = useState<{ cpf?: string; telefone?: string }>({});
 
   function handleSubmit(event: FormEvent) {
     event.preventDefault();
+    const novosErros: typeof erros = {};
+    if (!cpfValido(form.cpf)) novosErros.cpf = "CPF inválido.";
+    if (!telefoneValido(form.telefone)) novosErros.telefone = "Telefone inválido — informe DDD + número.";
+    setErros(novosErros);
+    if (Object.keys(novosErros).length > 0) return;
     void onSubmit(form);
   }
 
@@ -42,9 +49,15 @@ export function DadosPessoaisForm({
           id="dp-cpf"
           className="input input--mono"
           value={form.cpf}
-          onChange={(e) => setForm({ ...form, cpf: e.target.value })}
+          onChange={(e) => setForm({ ...form, cpf: mascaraCpf(e.target.value) })}
+          inputMode="numeric"
           required
         />
+        {erros.cpf && (
+          <span className="field__error" role="alert">
+            {erros.cpf}
+          </span>
+        )}
       </div>
       <div className="field">
         <label className="field__label" htmlFor="dp-nascimento">
@@ -67,9 +80,15 @@ export function DadosPessoaisForm({
           id="dp-telefone"
           className="input"
           value={form.telefone}
-          onChange={(e) => setForm({ ...form, telefone: e.target.value })}
+          onChange={(e) => setForm({ ...form, telefone: mascaraTelefone(e.target.value) })}
+          inputMode="numeric"
           required
         />
+        {erros.telefone && (
+          <span className="field__error" role="alert">
+            {erros.telefone}
+          </span>
+        )}
       </div>
       <button type="submit" className="button button--primary">
         Continuar

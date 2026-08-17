@@ -8,4 +8,7 @@ interface SolicitacaoRepository {
 
     /** Escopado por clienteId na própria chave — não existe "buscar por id" sem dono. */
     suspend fun buscarPorId(clienteId: String, id: String): Solicitacao?
+
+    /** No máximo uma `ABERTA` por cliente — usado por `criar()` pra evitar duplicata. */
+    suspend fun buscarAbertaPorCliente(clienteId: String): Solicitacao?
 }

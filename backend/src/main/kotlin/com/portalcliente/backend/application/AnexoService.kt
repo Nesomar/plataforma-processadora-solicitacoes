@@ -3,6 +3,7 @@ package com.portalcliente.backend.application
 import com.portalcliente.backend.domain.Anexo
 import com.portalcliente.backend.domain.AnexoStatus
 import com.portalcliente.backend.domain.FormatoAnexoInvalidoException
+import com.portalcliente.backend.port.input.AnexoConteudo
 import com.portalcliente.backend.port.input.AnexoUseCase
 import com.portalcliente.backend.port.output.AnexoRepository
 import com.portalcliente.backend.port.output.ArquivoStorage
@@ -34,5 +35,13 @@ class AnexoService(
         // órfã (sem evento) na tabela — o cliente só vê sucesso quando tudo encadeou.
         publisher.publicar(anexo)
         return repository.salvar(anexo)
+    }
+
+    override suspend fun listarAnexos(clienteId: String): List<Anexo> = repository.listarPorCliente(clienteId)
+
+    override suspend fun visualizarAnexo(clienteId: String, id: String): AnexoConteudo? {
+        val anexo = repository.buscar(id, clienteId) ?: return null
+        val bytes = storage.ler(anexo.s3Key)
+        return AnexoConteudo(anexo, bytes, CONTENT_TYPE_PDF)
     }
 }
