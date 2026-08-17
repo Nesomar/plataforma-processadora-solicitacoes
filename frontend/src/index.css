@@ -207,6 +207,11 @@ a {
   color: var(--text-muted);
 }
 
+.field__error {
+  font-size: 13px;
+  color: var(--danger);
+}
+
 .input {
   font: inherit;
   font-size: 16px;
@@ -382,6 +387,12 @@ a {
   flex-wrap: wrap;
 }
 
+.painel__acoes {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .lista-solicitacoes {
   list-style: none;
   margin: 0;
@@ -430,6 +441,20 @@ a {
 
 .lista-solicitacoes__link[data-status="ABERTA"]::before {
   background: var(--pending);
+}
+
+.lista-anexos__link {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  border: none;
+  background: none;
+  font: inherit;
+  text-align: left;
+  color: var(--text);
+  cursor: pointer;
 }
 
 .status-badge {

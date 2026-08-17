@@ -31,26 +31,26 @@
 
 ## 4. Frontend: validação de campos
 
-- [ ] 4.1 Função util de validação/máscara de CPF (com dígito verificador) reaproveitada em `DadosPessoaisForm.tsx`
-- [ ] 4.2 Função util de máscara/validação de CEP e telefone em `DadosPessoaisForm.tsx`/`EnderecoForm.tsx`
-- [ ] 4.3 Validação de formato de email antes do submit em `SignupPage.tsx`
-- [ ] 4.4 Mensagens de erro inline nos 3 forms (sem submeter até corrigir)
-- [ ] 4.5 `npm test` (vitest) cobrindo os validators novos, `npm run build`, code review, commit
+- [x] 4.1 Função util de validação/máscara de CPF (com dígito verificador) reaproveitada em `DadosPessoaisForm.tsx`
+- [x] 4.2 Função util de máscara/validação de CEP e telefone em `DadosPessoaisForm.tsx`/`EnderecoForm.tsx`
+- [x] 4.3 Validação de formato de email antes do submit em `SignupPage.tsx`
+- [x] 4.4 Mensagens de erro inline nos 3 forms (sem submeter até corrigir)
+- [x] 4.5 `npm test` (vitest) cobrindo os validators novos, `npm run build`, code review, commit
 
 ## 5. Frontend: navegação e fluxo de solicitação
 
-- [ ] 5.1 Botão/link de volta pra listagem em `SolicitacaoDetailPage.tsx`
-- [ ] 5.2 `DashboardPage.tsx`: checar se já existe solicitação `ABERTA` (via `GET /api/solicitacoes`) e trocar rótulo/ação do botão ("Continuar solicitação" → navega pro detalhe existente)
-- [ ] 5.3 `SolicitacaoDetailPage.tsx`: modo edição (form com os mesmos validators da seção 4) quando status `ABERTA`, chamando o novo `PATCH`
-- [ ] 5.4 `solicitacoesApi.ts`: adicionar método `atualizar(id, dados)`
-- [ ] 5.5 `npm test`, `npm run build`, code review, commit
+- [x] 5.1 Botão/link de volta pra listagem em `SolicitacaoDetailPage.tsx`
+- [x] 5.2 `DashboardPage.tsx`: checar se já existe solicitação `ABERTA` (via `GET /api/solicitacoes`) e trocar rótulo/ação do botão ("Continuar solicitação" → navega pro detalhe existente)
+- [x] 5.3 `SolicitacaoDetailPage.tsx`: modo edição (form com os mesmos validators da seção 4) quando status `ABERTA`, chamando o novo `PATCH` (precisou estender `SolicitacaoResponse` do backend com o snapshot completo — `dadosPessoais`/`endereco`/`renda` — pra pré-preencher o form)
+- [x] 5.4 `solicitacoesApi.ts`: adicionar método `atualizar(id, dados)`
+- [x] 5.5 `npm test`, `npm run build`, code review, commit
 
 ## 6. Frontend: visualização de anexos
 
-- [ ] 6.1 `anexosApi.ts`: adicionar `listar()` e `visualizar(id)` (URL do endpoint de leitura)
-- [ ] 6.2 Nova seção/tela "Meus anexos" (fora do wizard) listando anexos do cliente
-- [ ] 6.3 Visualização inline (embed de PDF), sem link/botão de download
-- [ ] 6.4 `npm test`, `npm run build`, code review, commit
+- [x] 6.1 `anexosApi.ts`: adicionar `listar()` e `visualizar(id)` (busca como blob autenticado — endpoint exige Bearer token, `<embed src>` não manda header custom)
+- [x] 6.2 Nova seção/tela "Meus anexos" (`AnexosPage.tsx`, rota `/anexos`) listando anexos do cliente, link a partir do Dashboard
+- [x] 6.3 Visualização inline (embed de PDF via object URL do blob), sem link/botão de download
+- [x] 6.4 `npm test`, `npm run build`, code review, commit
 
 ## 7. Verificação final
 

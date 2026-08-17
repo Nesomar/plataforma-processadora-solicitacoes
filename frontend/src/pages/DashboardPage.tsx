@@ -7,7 +7,7 @@ import { solicitacoesApi } from "../api/solicitacoesApi";
 export function DashboardPage() {
   const [solicitacoes, setSolicitacoes] = useState<Solicitacao[] | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [criando, setCriando] = useState(false);
+  const [processando, setProcessando] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -22,12 +22,21 @@ export function DashboardPage() {
     }
   }
 
+  const abertaExistente = solicitacoes?.find((s) => s.status === "ABERTA") ?? null;
+
+  // Uma ABERTA por vez (specs/service-requests/spec.md): se já existe, continua editando
+  // ela em vez de criar outra — o backend também é idempotente aqui, mas evitar a chamada
+  // poupa uma ida ao servidor quando já sabemos a resposta.
   async function novaSolicitacao() {
     setError(null);
-    setCriando(true);
+    setProcessando(true);
     try {
-      await solicitacoesApi.criar();
-      await carregar();
+      if (abertaExistente) {
+        navigate(`/solicitacoes/${abertaExistente.id}`);
+        return;
+      }
+      const criada = await solicitacoesApi.criar();
+      navigate(`/solicitacoes/${criada.id}`);
     } catch (err) {
       // Perfil incompleto: backend recusa com 409 (specs/service-requests/spec.md)
       if (isAxiosError(err) && err.response?.status === 409) {
@@ -36,7 +45,7 @@ export function DashboardPage() {
       }
       setError("Não foi possível criar a solicitação.");
     } finally {
-      setCriando(false);
+      setProcessando(false);
     }
   }
 
@@ -48,9 +57,14 @@ export function DashboardPage() {
       <div className="shell shell--painel">
         <div className="painel__header">
           <h1>Minhas solicitações</h1>
-          <button type="button" className="button button--primary" onClick={novaSolicitacao} disabled={criando}>
-            {criando ? "Criando..." : "Nova solicitação"}
-          </button>
+          <div className="painel__acoes">
+            <Link to="/anexos" className="button button--secondary">
+              Meus anexos
+            </Link>
+            <button type="button" className="button button--primary" onClick={novaSolicitacao} disabled={processando}>
+              {processando ? "Aguarde..." : abertaExistente ? "Continuar solicitação" : "Nova solicitação"}
+            </button>
+          </div>
         </div>
         {error && (
           <p className="alert" role="alert">

@@ -35,6 +35,10 @@ data class SolicitacaoResponse(
     val cidade: String,
     val uf: String,
     val rendaMensal: BigDecimal,
+    // Snapshot completo — usado pelo front pra pré-preencher o formulário de edição (PATCH acima).
+    val dadosPessoais: DadosPessoais,
+    val endereco: Endereco,
+    val renda: Renda,
 ) {
     companion object {
         fun de(s: Solicitacao) = SolicitacaoResponse(
@@ -45,6 +49,9 @@ data class SolicitacaoResponse(
             cidade = s.endereco.cidade,
             uf = s.endereco.uf,
             rendaMensal = s.renda.rendaMensal,
+            dadosPessoais = s.dadosPessoais,
+            endereco = s.endereco,
+            renda = s.renda,
         )
     }
 }

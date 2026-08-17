@@ -4,6 +4,7 @@ import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { signUp } from "../auth/authApi";
 import { EntradaShell } from "./EntradaShell";
+import { emailValido } from "../utils/validacao";
 
 const SENHA_MIN_LENGTH = 8;
 
@@ -24,6 +25,11 @@ export function SignupPage() {
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
     setError(null);
+
+    if (!emailValido(email)) {
+      setError("Informe um email em formato válido.");
+      return;
+    }
 
     const erroSenha = validarSenha(password);
     if (erroSenha) {
