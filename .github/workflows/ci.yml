@@ -49,9 +49,10 @@ jobs:
       - name: Abrir PR pra main se ainda não existir
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: ${{ github.ref_name }}
         run: |
-          if gh pr list --base main --head "${{ github.ref_name }}" --state open --json number --jq 'length' | grep -q '^0$'; then
-            gh pr create --base main --head "${{ github.ref_name }}" --fill
+          if gh pr list --base main --head "$BRANCH" --state open --json number --jq 'length' | grep -q '^0$'; then
+            gh pr create --base main --head "$BRANCH" --fill
           else
-            echo "PR já existe pra ${{ github.ref_name }} -> main"
+            echo "PR já existe pra $BRANCH -> main"
           fi
