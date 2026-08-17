@@ -54,5 +54,5 @@
 
 ## 7. Verificação final
 
-- [ ] 7.1 E2E manual via docker-compose + ministack: cadastro com email inválido rejeitado, onboarding com CPF/CEP/telefone inválido rejeitado, criar solicitação → clicar "nova" de novo continua a mesma, editar solicitação aberta, visualizar anexo sem opção de download, botão voltar no detalhe
+- [x] 7.1 E2E manual via docker-compose + ministack: cadastro com email inválido rejeitado (400), onboarding com CPF/CEP/telefone inválido rejeitado (400), criar solicitação → clicar "nova" de novo continua a mesma (idempotente, mesmo id), editar solicitação aberta (PATCH + validação inline no front), visualizar anexo sem opção de download (Content-Disposition: inline, embed no front), botão voltar no detalhe, isolamento entre clientes (404 em anexo/solicitação de outro cliente). Achado no code review corrigido durante o E2E: `Endereco.complemento` pode vir `null` do backend — `SolicitacaoDetailPage.tsx` normaliza pra `""` ao carregar o form de edição
 - [ ] 7.2 Sync das specs (`openspec-sync-specs`) e archive do change

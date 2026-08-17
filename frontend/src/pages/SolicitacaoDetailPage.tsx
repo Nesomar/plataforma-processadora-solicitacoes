@@ -13,7 +13,12 @@ type FormEdicao = {
 };
 
 function paraForm(s: Solicitacao): FormEdicao {
-  return { dadosPessoais: s.dadosPessoais, endereco: s.endereco, renda: s.renda };
+  return {
+    dadosPessoais: s.dadosPessoais,
+    // Backend permite complemento null (Endereco.kt) — input controlado não aceita null.
+    endereco: { ...s.endereco, complemento: s.endereco.complemento ?? "" },
+    renda: s.renda,
+  };
 }
 
 export function SolicitacaoDetailPage() {
