@@ -21,6 +21,11 @@ cadastro, sem etapa de confirmação por e-mail.
 - **WHEN** o cliente tenta se cadastrar com um email que já possui credencial
 - **THEN** o sistema rejeita o cadastro sem sobrescrever a credencial existente
 
+#### Scenario: Email em formato inválido
+- **WHEN** o cliente tenta se cadastrar com um valor que não é um email válido (ex: sem `@` ou
+  domínio)
+- **THEN** o sistema rejeita o cadastro sem criar a credencial
+
 ### Requirement: Login do cliente
 O sistema SHALL autenticar o cliente através de credenciais próprias (email + senha) armazenadas
 no backend, emitindo um JWT assinado pelo próprio backend em caso de credenciais válidas.
