@@ -1,5 +1,8 @@
 package com.portalcliente.backend.adapter.input.web
 
+import com.portalcliente.backend.adapter.input.web.validation.ValidCep
+import com.portalcliente.backend.adapter.input.web.validation.ValidCpf
+import com.portalcliente.backend.adapter.input.web.validation.ValidTelefone
 import com.portalcliente.backend.domain.DadosPessoais
 import com.portalcliente.backend.domain.Endereco
 import com.portalcliente.backend.domain.Renda
@@ -20,13 +23,13 @@ import java.math.BigDecimal
 
 data class DadosPessoaisRequest(
     @field:NotBlank val nome: String,
-    @field:NotBlank val cpf: String,
+    @field:NotBlank @field:ValidCpf val cpf: String,
     @field:NotBlank val dataNascimento: String,
-    @field:NotBlank val telefone: String,
+    @field:NotBlank @field:ValidTelefone val telefone: String,
 )
 
 data class EnderecoRequest(
-    @field:NotBlank val cep: String,
+    @field:NotBlank @field:ValidCep val cep: String,
     @field:NotBlank val logradouro: String,
     @field:NotBlank val numero: String,
     val complemento: String?,

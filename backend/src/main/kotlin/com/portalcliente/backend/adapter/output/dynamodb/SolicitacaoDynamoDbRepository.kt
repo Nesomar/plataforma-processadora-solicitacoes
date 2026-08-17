@@ -39,6 +39,11 @@ class SolicitacaoDynamoDbRepository(
     override suspend fun buscarPorId(clienteId: String, id: String): Solicitacao? =
         findByKey(partitionKey(clienteId), sortKey(id))?.toDomain()
 
+    override suspend fun buscarAbertaPorCliente(clienteId: String): Solicitacao? =
+        queryBySortPrefix(partitionKey(clienteId), SORT_PREFIX)
+            .map { it.toDomain() }
+            .firstOrNull { it.status == SolicitacaoStatus.ABERTA }
+
     private fun Solicitacao.toItem(): SolicitacaoItem {
         val item = SolicitacaoItem()
         item.pk = partitionKey(clienteId)

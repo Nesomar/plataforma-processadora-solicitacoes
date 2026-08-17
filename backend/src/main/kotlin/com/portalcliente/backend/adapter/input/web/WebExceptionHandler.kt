@@ -5,6 +5,7 @@ import com.portalcliente.backend.domain.EmailJaCadastradoException
 import com.portalcliente.backend.domain.FormatoAnexoInvalidoException
 import com.portalcliente.backend.domain.OrdemEtapaInvalidaException
 import com.portalcliente.backend.domain.PerfilIncompletoException
+import com.portalcliente.backend.domain.SolicitacaoNaoAbertaException
 import org.springframework.core.io.buffer.DataBufferLimitException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -49,4 +50,9 @@ class WebExceptionHandler {
     @ExceptionHandler(CredenciaisInvalidasException::class)
     fun handleCredenciaisInvalidas(ex: CredenciaisInvalidasException): ResponseEntity<Map<String, String?>> =
         ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(mapOf("error" to ex.message))
+
+    // PATCH em solicitação que não está mais ABERTA (specs/service-requests/spec.md)
+    @ExceptionHandler(SolicitacaoNaoAbertaException::class)
+    fun handleSolicitacaoNaoAberta(ex: SolicitacaoNaoAbertaException): ResponseEntity<Map<String, String?>> =
+        ResponseEntity.status(HttpStatus.CONFLICT).body(mapOf("error" to ex.message))
 }
